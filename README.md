@@ -1,0 +1,2 @@
+# nowjs
+tiny js lib
