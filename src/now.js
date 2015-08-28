@@ -60,6 +60,6 @@
 		}
 	};
 
-	window.now = now();
+	window.Now = now();
 
 })(window, document);
