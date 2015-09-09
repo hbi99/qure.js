@@ -23,7 +23,7 @@ Now.wait(200).then(function() {
 	});
 
 Now.fork().wait(250).then(function() {
-		// executed after 50 milliseconds after previous call
+		// executed after 250 milliseconds (50 ms after previous call)
 		console.log(2);
 	})
 
