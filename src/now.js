@@ -1,5 +1,5 @@
 
-(function(window, document, undefined) {
+var Now = (function(window, document, undefined) {
 	'use strict';
 
 	// queuing mechanism
@@ -42,6 +42,9 @@
 		return that;
 	};
 	now.prototype = {
+		fork: function() {
+			return new now();
+		},
 		wait: function(duration) {
 			var self = this,
 				fn = function() {
@@ -60,6 +63,6 @@
 		}
 	};
 
-	window.Now = now();
+	return now();
 
 })(window, document);
