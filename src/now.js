@@ -1,5 +1,11 @@
 
-var Now = (function(window, document, undefined) {
+if (typeof module === "undefined") {
+	var module = { exports: undefined };
+} else {
+	// Node env adaptation goes here...
+}
+
+module.exports = Now = (function(window, document, undefined) {
 	'use strict';
 
 	// queuing mechanism
