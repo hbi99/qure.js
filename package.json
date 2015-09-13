@@ -1,0 +1,35 @@
+{
+  "name": "nowjs",
+  "version": "0.1.2",
+  "description": "",
+  "private": true,
+  "author": {
+    "name": "Hakan Bilgin",
+    "email": "hbi@longscript.com",
+    "url": "https://github.com/hbi99"
+  },
+  "keywords": [
+    "javascript"
+  ],
+  "license": {
+    "type": "MIT",
+    "url": "http://mit-license.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hbi99/nowjs.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hbi99/nowjs.js/issues"
+  },
+  "homepage": "https://github.com/hbi99/nowjs.js",
+  "main": "./lib/nowjs",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-uglify": "~0.3.2",
+    "grunt-contrib-jasmine": "~0.6.3"
+  }
+}

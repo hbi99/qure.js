@@ -1,3 +1,11 @@
+/* 
+ * Now.js v0.0.2 
+ *  
+ * https://github.com/hbi99/nowjs.js 
+ * 
+ * Copyright (c) 2013-2015, Hakan Bilgin <hbi@longscript.com> 
+ * Licensed under the MIT License 
+ */ 
 
 if (typeof module === "undefined") {
 	var module = { exports: undefined };
