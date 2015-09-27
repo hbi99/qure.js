@@ -29,3 +29,12 @@ Now.fork().wait(250).then(function() {
 
 ```
 
+### To-do's
+- [ ] Recursion support
+
+
+
+### Changelog
+- [x] `0.1.3` Added support for queueable 'ajax' calls
+- [x] `0.1.2` Added support for 'fork' of Now timeline
+- [x] `0.1.1` First version, supporting 'wait' & 'then'

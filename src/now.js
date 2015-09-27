@@ -23,7 +23,7 @@ module.exports = Now = (function(window, document, undefined) {
 			if (this._paused) return;
 			while (this._methods[0]) {
 				var fn = this._methods.shift();
-				fn.call(this._owner);
+				fn.apply(this._owner, arguments);
 				if (fn._paused) {
 					this._paused = true;
 					break;
@@ -31,6 +31,32 @@ module.exports = Now = (function(window, document, undefined) {
 			}
 		}
 	};
+
+	// CORS Request
+	function CORSreq(parent, targetUrl) {
+		var method = 'GET',
+			xhr = new XMLHttpRequest();
+		if ('withCredentials' in xhr) {
+			xhr.open(method, targetUrl, true);
+		} else if (typeof XDomainRequest != 'undefined') {
+			xhr = new XDomainRequest();
+			xhr.open(method, targetUrl);
+		} else {
+			// no-support -> fallback: JSReq ?
+			throw 'XHR not supported';
+		}
+		xhr.parent = parent;
+		xhr.onload = this.doload;
+		return xhr;
+	}
+	CORSreq.prototype = {
+		doload: function(event) {
+			var resp = JSON.parse(event.target.responseText);
+			this.parent.queue._paused = false;
+			this.parent.queue.flush(resp);
+		}
+	};
+
 
 	// nowjs class
 	function Now() {
@@ -64,6 +90,20 @@ module.exports = Now = (function(window, document, undefined) {
 			return this;
 		},
 		then: function(fn) {
+			if (fn) this.queue.add(fn);
+			return this;
+		},
+		ajax: function(url) {
+			var self = this,
+				fn = function() {
+					var cors = new CORSreq(self, url);
+					cors.send( );
+				};
+			fn._paused = true;
+			this.queue.add(fn);
+			return this;
+		},
+		recursive: function(fn) {
 			if (fn) this.queue.add(fn);
 			return this;
 		}
