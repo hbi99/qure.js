@@ -1,4 +1,4 @@
-# nowjs
+# NowJS
 Tiny javascript library, enabling codeflow like this
 
 ```js
@@ -30,6 +30,7 @@ Now.fork().wait(250).then(function() {
 ```
 
 ### To-do's
+- [ ] Hash ajax support
 - [ ] Recursion support
 
 

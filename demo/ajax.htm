@@ -9,13 +9,13 @@
 
 <script type="text/javascript">
 
-Now.ajax('./test.json')
+Now.ajax('./test1.json')
 	.then(function(data) {
-		console.log(1);
+		console.log(data);
 	})
-	.ajax('./test.json')
+	.ajax('./test2.json')
 	.then(function(data) {
-		console.log(2);
+		console.log(data);
 	});
 
 </script>
