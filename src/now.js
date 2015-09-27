@@ -60,19 +60,9 @@ module.exports = Now = (function(window, document, undefined) {
 
 	// nowjs class
 	function Now() {
-		var that = {};
-		Now.extendClass(that);
-		that.queue = new Queue(that);
-		return that;
+		this.queue = new Queue(this);
+		return this;
 	}
-	Now.extendClass = function(that) {
-		for (var method in Now.prototype) {
-			if (Now.prototype.hasOwnProperty(method)) {
-				that[method] = Now.prototype[method];
-			}
-		}
-		return that;
-	};
 	Now.prototype = {
 		fork: function() {
 			return new Now();
