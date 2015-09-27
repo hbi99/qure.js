@@ -2,14 +2,17 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Now.js - Kitchen sink</title>
+<title>Now.js - Recursive demo</title>
 <script type="text/javascript" src="../src/now.js"></script>
 </head>
 <body>
 
 <script type="text/javascript">
 
-Now.wait(500).then(function() {
+Now.recursive(function() {
+		console.log(1);
+	})
+	.then(function() {
 		console.log(1);
 	});
 

@@ -101,7 +101,7 @@ var Now = (function(window, document, undefined) {
 
 
 if (typeof module === "undefined") {
-	var module = { exports: undefined };
+	var module = {};
 } else {
 	// Node env adaptation goes here...
 }

@@ -1,5 +1,5 @@
 /* 
- * Now.js v0.1.3 
+ * Now.js v0.1.4 
  *  
  * https://github.com/hbi99/nowjs.js 
  * 
@@ -7,19 +7,14 @@
  * Licensed under the MIT License 
  */ 
 
-if (typeof module === "undefined") {
-	var module = { exports: undefined };
-} else {
-	// Node env adaptation goes here...
-}
-
-module.exports = Now = (function(window, document, undefined) {
+var Now = (function(window, document, undefined) {
 	'use strict';
 
 	// queuing mechanism
-	function Queue(owner) {
+	function Queue(owner, that) {
 		this._methods = [];
 		this._owner = owner;
+		this._that = that;
 		this._paused = false;
 	}
 	Queue.prototype = {
@@ -31,7 +26,7 @@ module.exports = Now = (function(window, document, undefined) {
 			if (this._paused) return;
 			while (this._methods[0]) {
 				var fn = this._methods.shift();
-				fn.apply(this._owner, arguments);
+				fn.apply(this._that, arguments);
 				if (fn._paused) {
 					this._paused = true;
 					break;
@@ -40,7 +35,7 @@ module.exports = Now = (function(window, document, undefined) {
 		}
 	};
 
-	// CORS Request
+	// cors request
 	function CORSreq(parent, targetUrl) {
 		var method = 'GET',
 			xhr = new XMLHttpRequest();
@@ -69,18 +64,9 @@ module.exports = Now = (function(window, document, undefined) {
 	// nowjs class
 	function Now() {
 		var that = {};
-		Now.extendClass(that);
-		that.queue = new Queue(that);
-		return that;
+		this.queue = new Queue(this, that);
+		return this;
 	}
-	Now.extendClass = function(that) {
-		for (var method in Now.prototype) {
-			if (Now.prototype.hasOwnProperty(method)) {
-				that[method] = Now.prototype[method];
-			}
-		}
-		return that;
-	};
 	Now.prototype = {
 		fork: function() {
 			return new Now();
@@ -120,3 +106,11 @@ module.exports = Now = (function(window, document, undefined) {
 	return new Now();
 
 })(window, document);
+
+
+if (typeof module === "undefined") {
+	var module = {};
+} else {
+	// Node env adaptation goes here...
+}
+module.exports = Now;
