@@ -31,7 +31,7 @@ Now.fork().wait(250).then(function() {
 
 ### To-do's
 - [ ] Queue splice
-- [ ] Hash ajax
+- [ ] Hashed ajax list
 - [ ] Recursion
 - [ ] Node support
 
