@@ -32,6 +32,7 @@ Now.fork().wait(250).then(function() {
 ### To-do's
 - [ ] Hash ajax support
 - [ ] Recursion support
+- [ ] Node support
 
 
 
