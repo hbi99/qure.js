@@ -1,17 +1,12 @@
 
-if (typeof module === "undefined") {
-	var module = { exports: undefined };
-} else {
-	// Node env adaptation goes here...
-}
-
-module.exports = Now = (function(window, document, undefined) {
+var Now = (function(window, document, undefined) {
 	'use strict';
 
 	// queuing mechanism
-	function Queue(owner) {
+	function Queue(owner, that) {
 		this._methods = [];
 		this._owner = owner;
+		this._that = that;
 		this._paused = false;
 	}
 	Queue.prototype = {
@@ -23,7 +18,7 @@ module.exports = Now = (function(window, document, undefined) {
 			if (this._paused) return;
 			while (this._methods[0]) {
 				var fn = this._methods.shift();
-				fn.apply(this._owner, arguments);
+				fn.apply(this._that, arguments);
 				if (fn._paused) {
 					this._paused = true;
 					break;
@@ -32,7 +27,7 @@ module.exports = Now = (function(window, document, undefined) {
 		}
 	};
 
-	// CORS Request
+	// cors request
 	function CORSreq(parent, targetUrl) {
 		var method = 'GET',
 			xhr = new XMLHttpRequest();
@@ -60,7 +55,8 @@ module.exports = Now = (function(window, document, undefined) {
 
 	// nowjs class
 	function Now() {
-		this.queue = new Queue(this);
+		var that = {};
+		this.queue = new Queue(this, that);
 		return this;
 	}
 	Now.prototype = {
@@ -102,3 +98,11 @@ module.exports = Now = (function(window, document, undefined) {
 	return new Now();
 
 })(window, document);
+
+
+if (typeof module === "undefined") {
+	var module = { exports: undefined };
+} else {
+	// Node env adaptation goes here...
+}
+module.exports = Now;
