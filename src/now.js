@@ -79,7 +79,7 @@ var Now = (function(window, document, undefined) {
 			if (fn) this.queue.add(fn);
 			return this;
 		},
-		ajax: function(url) {
+		load: function(url) {
 			var self = this,
 				fn = function() {
 					var cors = new CORSreq(self, url);

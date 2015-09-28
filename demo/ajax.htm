@@ -9,11 +9,14 @@
 
 <script type="text/javascript">
 
-Now.ajax('./test1.json')
+Now
+	.wait(1000)
+	.load('./test1.json')
 	.then(function(data) {
 		console.log(data);
 	})
-	.ajax('./test2.json')
+	.wait(1000)
+	.load('./test2.json')
 	.then(function(data) {
 		console.log(data);
 	});
