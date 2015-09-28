@@ -15,9 +15,10 @@ var Now = (function(window, document, undefined) {
 			if (!this._paused) this.flush();
 		},
 		flush: function() {
+			var fn;
 			if (this._paused) return;
 			while (this._methods[0]) {
-				var fn = this._methods.shift();
+				fn = this._methods.shift();
 				fn.apply(this._that, arguments);
 				if (fn._paused) {
 					this._paused = true;
@@ -28,27 +29,42 @@ var Now = (function(window, document, undefined) {
 	};
 
 	// cors request
-	function CORSreq(parent, targetUrl) {
+	function CORSreq(owner, url, hash, key) {
 		var method = 'GET',
 			xhr = new XMLHttpRequest();
 		if ('withCredentials' in xhr) {
-			xhr.open(method, targetUrl, true);
+			xhr.open(method, url, true);
 		} else if (typeof XDomainRequest != 'undefined') {
 			xhr = new XDomainRequest();
-			xhr.open(method, targetUrl);
+			xhr.open(method, url);
 		} else {
 			// no-support -> fallback: JSReq ?
 			throw 'XHR not supported';
 		}
-		xhr.parent = parent;
+		xhr.hash   = hash;
+		xhr.key    = key;
+		xhr.owner  = owner;
 		xhr.onload = this.doload;
 		return xhr;
 	}
 	CORSreq.prototype = {
 		doload: function(event) {
-			var resp = JSON.parse(event.target.responseText);
-			this.parent.queue._paused = false;
-			this.parent.queue.flush(resp);
+			var resp = JSON.parse(event.target.responseText),
+				args = [],
+				isDone = true,
+				name;
+			if (this.hash) {
+				this.hash[this.key] = resp;
+
+				for (name in this.hash) {
+					if (typeof(this.hash[name]) === 'string') isDone = false;
+				}
+				if (isDone) {
+					args.push(this.hash);
+				}
+			}
+			this.owner.queue._paused = false;
+			this.owner.queue.flush.apply(this.owner.queue, args);
 		}
 	};
 
@@ -79,12 +95,18 @@ var Now = (function(window, document, undefined) {
 			if (fn) this.queue.add(fn);
 			return this;
 		},
-		load: function(url) {
+		load: function(url, hash, key) {
 			var self = this,
 				fn = function() {
-					var cors = new CORSreq(self, url);
-					cors.send( );
+					var cors = new CORSreq(self, url, hash, key);
+					cors.send();
 				};
+			if (typeof(url) === 'object') {
+				for (var name in url) {
+					this.load(url[name], url, name);
+				}
+				return this;
+			}
 			fn._paused = true;
 			this.queue.add(fn);
 			return this;

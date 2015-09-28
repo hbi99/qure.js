@@ -31,13 +31,13 @@ Now.fork().wait(250).then(function() {
 
 ### To-do's
 - [ ] Queue splice
-- [ ] Hashed ajax list
 - [ ] Recursion
 - [ ] Node support
 
 
 
 ### Changelog
+- [x] `0.1.5` Added support for hashed ajax loading
 - [x] `0.1.4` 'this' is consistent & preserved throughout the chain
 - [x] `0.1.3` Added support for queueable 'ajax' calls
 - [x] `0.1.2` Added support for 'fork' of Now timeline
