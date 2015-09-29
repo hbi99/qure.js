@@ -122,7 +122,6 @@
 		},
 		recurse: function(fn) {
 			var func = function() {
-				// todo: this should be wrapped in 'fn' - and be exectued when it is its turn
 				var str  = fn.toString(),
 					args = str.match(/functio.+?\((.*?)\)/)[1].split(','),
 					body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
