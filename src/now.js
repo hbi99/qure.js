@@ -1,5 +1,5 @@
 
-var Now = (function(window, document, undefined) {
+(function(window, module) {
 	'use strict';
 
 	// queuing mechanism
@@ -15,11 +15,18 @@ var Now = (function(window, document, undefined) {
 			if (!this._paused) this.flush();
 		},
 		flush: function() {
-			var fn;
+			var fn,
+				args = arguments;
+
+			if (recursion.res) {
+				args = [recursion.res];
+				delete recursion.res;
+			};
+
 			if (this._paused) return;
 			while (this._methods[0]) {
 				fn = this._methods.shift();
-				fn.apply(this._that, arguments);
+				fn.apply(this._that, args);
 				if (fn._paused) {
 					this._paused = true;
 					break;
@@ -68,6 +75,8 @@ var Now = (function(window, document, undefined) {
 		}
 	};
 
+	// recursive requirements
+	var recursion = {};
 
 	// nowjs class
 	function Now() {
@@ -111,20 +120,38 @@ var Now = (function(window, document, undefined) {
 			this.queue.add(fn);
 			return this;
 		},
-		recursive: function(fn) {
-			if (fn) this.queue.add(fn);
+		recurse: function(fn) {
+			var func = function() {
+				var str  = fn.toString(),
+					args = str.match(/functio.+?\((.*?)\)/)[1].split(','),
+					body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
+
+				body = body.replace(/\bself\(/g, 'this.fn(');
+
+				// append function body
+				args.push(body);
+
+				// prepeare recursion
+				recursion.fn = Function.apply({}, args);
+			};
+			this.queue.add(func);
+			return this;
+		},
+		run: function() {
+			var self = this,
+				args = arguments,
+				fn = function() {
+					recursion.res = recursion.fn.apply(recursion, args);
+				};
+			this.queue.add(fn);
 			return this;
 		}
 	};
 
-	return new Now();
+	// Export
+	window.Now = module.exports = new Now();
 
-})(window, document);
-
-
-if (typeof module === "undefined") {
-	var module = {};
-} else {
-	// Node env adaptation goes here...
-}
-module.exports = Now;
+})(
+	typeof window !== 'undefined' ? window : {},
+	typeof module !== 'undefined' ? module : {}
+);

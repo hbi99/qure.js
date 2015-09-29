@@ -2,18 +2,21 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Now.js - Recursive demo</title>
+<title>Now.js - Kitchen sink</title>
 <script type="text/javascript" src="../src/now.js"></script>
 </head>
 <body>
 
 <script type="text/javascript">
 
-Now.recursive(function() {
-		console.log(1);
+// fibonacci numbers
+Now
+	.recurse(function(n) {
+		return (n < 2) ? 1 : self(n-2) + self(n-1);
 	})
-	.then(function() {
-		console.log(1);
+	.run(7)
+	.then(function(res) {
+		console.log(res);
 	});
 
 </script>
