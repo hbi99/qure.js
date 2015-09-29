@@ -29,9 +29,12 @@ Now.fork().wait(250).then(function() {
 
 ```
 
+### Doing
+- [ ] Recursion (branch => recursion)
+
 ### To-do's
 - [ ] Queue splice
-- [ ] Recursion
+- [ ] Threaded recursion (web worker)
 - [ ] Node support
 
 
