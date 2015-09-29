@@ -10,16 +10,12 @@
 <script type="text/javascript">
 
 Now
-	.load({
-		'test1': './test1.json',
-		'test2': './test2.json'
+	.recurse(function(x) {
+		return (x <= 0) ? 1 : (x * self(x - 1));
 	})
-	.then(function(data) {
-		this.data = data;
-	})
-	.wait(500)
-	.then(function() {
-		console.log(this.data);
+	.run(6)
+	.then(function(res) {
+		console.log(res);
 	});
 
 </script>
