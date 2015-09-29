@@ -21,7 +21,7 @@
 			if (recursion.res) {
 				args = [recursion.res];
 				delete recursion.res;
-			};
+			}
 
 			if (this._paused) return;
 			while (this._methods[0]) {
