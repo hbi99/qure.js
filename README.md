@@ -33,6 +33,7 @@ Now.fork().wait(250).then(function() {
 - [ ] Queue splice
 - [ ] Threaded recursion (web worker)
 - [ ] Node support
+- [ ] Metaphorical support for Confirm & Prompt?
 
 
 
