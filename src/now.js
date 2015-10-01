@@ -67,7 +67,7 @@
 					if (typeof(this.hash[name]) === 'string') isDone = false;
 				}
 				if (isDone) {
-					args.push(this.hash);
+					args.push(this.hash._single ? this.hash._single : this.hash);
 				}
 			}
 			this.owner.queue._paused = false;
@@ -114,6 +114,9 @@
 				for (var name in url) {
 					this.load(url[name], url, name);
 				}
+				return this;
+			} else if (!hash) {
+				this.load({_single: url});
 				return this;
 			}
 			fn._paused = true;
