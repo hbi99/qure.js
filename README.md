@@ -34,6 +34,7 @@ Now.fork().wait(250).then(function() {
 - [ ] Threaded recursion (web worker)
 - [ ] Node support
 - [ ] Metaphorical support for Confirm & Prompt?
+- [ ] Wait for 'Now' instance
 
 
 
