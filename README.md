@@ -30,6 +30,7 @@ Now.fork().wait(250).then(function() {
 ```
 
 ### To-do's
+- [ ] Declare method?
 - [ ] Add test suite
 - [ ] Queue splice
 - [ ] Threaded recursion (web worker)
