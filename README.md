@@ -40,7 +40,7 @@ Now.fork().wait(250).then(function() {
 
 
 ### Changelog
-- [x] `0.1.8` Add test suite
+- [x] `0.1.8` Added test suite
 - [x] `0.1.7` Fixed bug handling ajax loading
 - [x] `0.1.6` Added support for recursion
 - [x] `0.1.5` Added support for hashed ajax loading
