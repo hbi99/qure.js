@@ -1,5 +1,5 @@
 /* 
- * Now.js v0.1.7 
+ * Now.js v0.1.8 
  *  
  * https://github.com/hbi99/nowjs.js 
  * 

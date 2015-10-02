@@ -79,7 +79,6 @@ module.exports = function (grunt) {
 	// version deployment
 	grunt.registerTask('default', [
 		'jshint',
-		'test',
 		'concat:latest',
     	'uglify:latest'
 	]);
