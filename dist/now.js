@@ -26,11 +26,6 @@
 			var fn,
 				args = arguments;
 
-			if (recursion.res) {
-				args = [recursion.res];
-				delete recursion.res;
-			}
-
 			if (this._paused) return;
 			while (this._methods[0]) {
 				fn = this._methods.shift();
@@ -109,7 +104,16 @@
 			return this;
 		},
 		then: function(fn) {
-			if (fn) this.queue.add(fn);
+			var self = this,
+				func = function() {
+					var args = [];
+					if (recursion.res) {
+						args.push(recursion.res);
+						delete recursion.res;
+					}
+					fn.apply(self.queue._that, args);
+				};
+			this.queue.add(func);
 			return this;
 		},
 		load: function(url, hash, key) {
@@ -133,18 +137,18 @@
 		},
 		recurse: function(fn) {
 			var func = function() {
-				var str  = fn.toString(),
-					args = str.match(/functio.+?\((.*?)\)/)[1].split(','),
-					body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
+					var str  = fn.toString(),
+						args = str.match(/functio.+?\((.*?)\)/)[1].split(','),
+						body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
 
-				body = body.replace(/\bself\(/g, 'this.fn(');
+					body = body.replace(/\bself\(/g, 'this.fn(');
 
-				// append function body
-				args.push(body);
+					// append function body
+					args.push(body);
 
-				// prepeare recursion
-				recursion.fn = Function.apply({}, args);
-			};
+					// prepeare recursion
+					recursion.fn = Function.apply({}, args);
+				};
 			this.queue.add(func);
 			return this;
 		},
