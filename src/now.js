@@ -18,11 +18,6 @@
 			var fn,
 				args = arguments;
 
-			if (recursion.res) {
-				args = [recursion.res];
-				delete recursion.res;
-			}
-
 			if (this._paused) return;
 			while (this._methods[0]) {
 				fn = this._methods.shift();
@@ -101,7 +96,16 @@
 			return this;
 		},
 		then: function(fn) {
-			if (fn) this.queue.add(fn);
+			var self = this,
+				func = function() {
+					var args = [];
+					if (recursion.res) {
+						args.push(recursion.res);
+						delete recursion.res;
+					}
+					fn.apply(self.queue._that, args);
+				};
+			this.queue.add(func);
 			return this;
 		},
 		load: function(url, hash, key) {
