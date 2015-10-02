@@ -51,6 +51,19 @@ module.exports = function (grunt) {
 				src: ['<%= concat.latest.dest %>'],
 				dest: 'dist/now.min.js'
 			}
+		},
+
+		// test tasks
+		mochaTest : {
+			all: {
+				options: {
+					//reporter: 'progress'
+					reporter: 'list'
+				},
+				src: [
+					'tests/test-02.js'
+				]
+			}
 		}
 
 	});
@@ -58,10 +71,15 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-jasmine');
+	grunt.loadNpmTasks('grunt-mocha-test');
 
+	// tests
+	grunt.registerTask('test', [ 'mochaTest' ]);
+
+	// version deployment
 	grunt.registerTask('default', [
 		'jshint',
+		'test',
 		'concat:latest',
     	'uglify:latest'
 	]);
