@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Now.js - 'fork' demo</title>
+<script type="text/javascript" src="../src/now.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+
+Now
+	.then(function() {
+		this.foo = 1;
+	})
+	.wait(500)
+	.then(function() {
+		console.log(this);
+	});
+
+Now.fork()
+	.wait(500)
+	.then(function() {
+		this.bar = 1;
+	})
+	.wait(500)
+	.then(function() {
+		console.log(this);
+	});
+
+</script>
+
+</body>
+</html>
