@@ -17,7 +17,6 @@
 		flush: function() {
 			var fn,
 				args = arguments;
-
 			if (this._paused) return;
 			while (this._methods[0]) {
 				fn = this._methods.shift();
@@ -102,6 +101,8 @@
 					if (recursion.res) {
 						args.push(recursion.res);
 						delete recursion.res;
+					} else {
+						args = arguments;
 					}
 					fn.apply(self.queue._that, args);
 				};

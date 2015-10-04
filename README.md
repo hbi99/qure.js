@@ -30,6 +30,7 @@ Qure.fork().wait(250).then(function() {
 ```
 
 ### To-do's
+- [ ] Load-method in Node environment
 - [ ] Declare method?
 - [ ] Queue splice
 - [ ] Threaded recursion (web worker)

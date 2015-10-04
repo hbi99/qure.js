@@ -1,6 +1,6 @@
 /* 
- * QureJS v0.1.9 
- * Tiny library introducing easy design pattern. 
+ * QureJS v0.2.0 
+ * Tiny library introducing an easy design pattern. 
  * https://github.com/hbi99/QureJS.js 
  * 
  * Copyright (c) 2013-2015, Hakan Bilgin <hbi@longscript.com> 
@@ -25,7 +25,6 @@
 		flush: function() {
 			var fn,
 				args = arguments;
-
 			if (this._paused) return;
 			while (this._methods[0]) {
 				fn = this._methods.shift();
@@ -110,6 +109,8 @@
 					if (recursion.res) {
 						args.push(recursion.res);
 						delete recursion.res;
+					} else {
+						args = arguments;
 					}
 					fn.apply(self.queue._that, args);
 				};

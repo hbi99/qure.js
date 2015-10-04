@@ -1,8 +1,7 @@
 {
-	"name": "QureJS",
-	"version": "0.1.9",
-	"description": "Tiny library introducing easy design pattern.",
-	"private": true,
+	"name": "qure",
+	"version": "0.2.0",
+	"description": "Tiny library introducing an easy design pattern.",
 	"author": {
 		"name": "Hakan Bilgin",
 		"email": "hbi@longscript.com",
