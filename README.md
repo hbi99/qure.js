@@ -30,6 +30,7 @@ Qure.fork().wait(250).then(function() {
 ```
 
 ### To-do's
+- [ ] Play/pause support
 - [ ] Load-method in Node environment
 - [ ] Declare method?
 - [ ] Queue splice
@@ -41,6 +42,7 @@ Qure.fork().wait(250).then(function() {
 
 
 ### Changelog
+- [x] `0.2.0` Published library as NPM module
 - [x] `0.1.9` Renamed the library to QureJS
 - [x] `0.1.8` Added test suite
 - [x] `0.1.7` Fixed bug handling ajax loading
