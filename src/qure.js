@@ -88,7 +88,7 @@
 					setTimeout(function() {
 						self.queue._paused = false;
 						self.queue.flush();
-					}, duration);
+					}, duration || 0);
 				};
 			fn._paused = true;
 			this.queue.add(fn);
@@ -128,7 +128,7 @@
 			this.queue.add(fn);
 			return this;
 		},
-		recurse: function(fn) {
+		declare: function(fn) {
 			var func = function() {
 					var str  = fn.toString(),
 						args = str.match(/functio.+?\((.*?)\)/)[1].split(','),
@@ -151,6 +151,17 @@
 				fn = function() {
 					recursion.res = recursion.fn.apply(recursion, args);
 				};
+			this.queue.add(fn);
+			return this;
+		},
+		play: function() {
+			return this;
+		},
+		pause: function() {
+			var fn = function() {
+
+				};
+			fn._paused = true;
 			this.queue.add(fn);
 			return this;
 		}
