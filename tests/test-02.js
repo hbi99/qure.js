@@ -3,7 +3,7 @@
  * 
  */
 
-var Now = require('../dist/now.js');
+var Qure = require('../dist/qure.js');
 
 describe('Testing ajax loading', function() {
 
@@ -12,7 +12,7 @@ describe('Testing ajax loading', function() {
 	 */
 	it('simple test should work fine', function(done) {
 		
-		Now
+		Qure
 			.load('./demo/test1.json')
 			.then(function(data) {
 				console.log(data);

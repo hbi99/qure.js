@@ -73,15 +73,15 @@
 	// recursive requirements
 	var recursion = {};
 
-	// nowjs class
-	function Now() {
+	// QureJS class
+	function Qure() {
 		var that = {};
 		this.queue = new Queue(this, that);
 		return this;
 	}
-	Now.prototype = {
+	Qure.prototype = {
 		fork: function() {
-			return new Now();
+			return new Qure();
 		},
 		wait: function(duration) {
 			var self = this,
@@ -156,7 +156,7 @@
 	};
 
 	// Export
-	window.Now = module.exports = new Now();
+	window.Qure = module.exports = new Qure();
 
 })(
 	typeof window !== 'undefined' ? window : {},

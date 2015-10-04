@@ -8,7 +8,7 @@ module.exports = function (grunt) {
 		meta: {
 			copyright : 'Copyright (c) 2013-<%= grunt.template.today("yyyy") %>',
 			banner    : '/* \n' +
-						' * Now.js v<%= pkg.version %> \n' +
+						' * QureJS v<%= pkg.version %> \n' +
 						' * <%= pkg.description %> \n' +
 						' * <%= pkg.homepage %> \n' +
 						' * \n' +
@@ -16,7 +16,7 @@ module.exports = function (grunt) {
 						' * Licensed under the <%= pkg.license.type %> License \n' +
 						' */ \n',
 			source    : [
-						'src/now.js'
+						'src/qure.js'
 						]
 		},
 
@@ -36,7 +36,7 @@ module.exports = function (grunt) {
 			// concat latest
 			latest: {
 				src: '<%= meta.source %>',
-				dest: 'dist/now.js'
+				dest: 'dist/qure.js'
 			}
 		},
 
@@ -49,7 +49,7 @@ module.exports = function (grunt) {
 			// uglify latest
 			latest: {
 				src: ['<%= concat.latest.dest %>'],
-				dest: 'dist/now.min.js'
+				dest: 'dist/qure.min.js'
 			}
 		},
 

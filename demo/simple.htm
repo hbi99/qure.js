@@ -2,14 +2,15 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Now.js - Simple demo</title>
-<script type="text/javascript" src="../src/now.js"></script>
+<title>QureJS - Simple demo</title>
+<script type="text/javascript" src="../src/qure.js"></script>
 </head>
 <body>
 
 <script type="text/javascript">
 
-Now.wait(1000).then(function() {
+Qure
+	.wait(1000).then(function() {
 		console.log(1);
 	})
 	.wait(1000).then(function() {
@@ -17,7 +18,8 @@ Now.wait(1000).then(function() {
 	});
 
 
-Now.fork()
+Qure
+	.fork()
 	.wait(1000).then(function() {
 		console.log(3);
 	})

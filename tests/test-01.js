@@ -3,7 +3,7 @@
  * 
  */
 
-var Now = require('../dist/now.js');
+var Qure = require('../dist/qure.js');
 
 describe('Simple test of the methods "wait" and "then"', function() {
 
@@ -12,7 +12,7 @@ describe('Simple test of the methods "wait" and "then"', function() {
 	 */
 	it('should work fine', function(done) {
 		
-		Now
+		Qure
 			.wait(100).then(function() {
 				done();
 			});
@@ -24,7 +24,7 @@ describe('Simple test of the methods "wait" and "then"', function() {
 	 */
 	it('with preserved "this"', function(done) {
 		
-		Now
+		Qure
 			.wait(100).then(function() {
 				this.a = 1;
 			})

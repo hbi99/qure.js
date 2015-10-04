@@ -1,8 +1,8 @@
-# NowJS
+# QureJS
 Tiny javascript library, enabling codeflow like this
 
 ```js
-Now
+Qure
 	.wait(1000).then(function() {
 		// executed after 1000 milliseconds
 		console.log(1);
@@ -14,15 +14,15 @@ Now
 
 ```
 
-It is also possible to "fork" Now-timeline...which enables multiple queueing/chaining, independent of each other.
+It is also possible to "fork" the timeline...which enables multiple queueing/chaining, independent of each other.
 
 ```js
-Now.wait(200).then(function() {
+Qure.wait(200).then(function() {
 		// executed after 200 milliseconds
 		console.log(1);
 	});
 
-Now.fork().wait(250).then(function() {
+Qure.fork().wait(250).then(function() {
 		// executed after 250 milliseconds (50 ms after previous call)
 		console.log(2);
 	})
@@ -40,6 +40,7 @@ Now.fork().wait(250).then(function() {
 
 
 ### Changelog
+- [x] `0.1.9` Renamed the library to QureJS
 - [x] `0.1.8` Added test suite
 - [x] `0.1.7` Fixed bug handling ajax loading
 - [x] `0.1.6` Added support for recursion

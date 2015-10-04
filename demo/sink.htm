@@ -2,24 +2,19 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Now.js - Kitchen sink</title>
-<script type="text/javascript" src="../src/now.js"></script>
+<title>QureJS - Kitchen sink</title>
+<script type="text/javascript" src="../src/qure.js"></script>
 </head>
 <body>
 
 <script type="text/javascript">
 
-Now
-	.recurse(function(x) {
-		return (x <= 0) ? 1 : (x * self(x - 1));
+Qure
+	.wait(1000).then(function() {
+		console.log(1);
 	})
-	.run(6)
-	.then(function(res) {
-		console.log(res);
-	})
-	.run(4)
-	.then(function(res) {
-		console.log(res);
+	.wait(1000).then(function() {
+		console.log(2);
 	});
 
 </script>

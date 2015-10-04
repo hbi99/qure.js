@@ -1,7 +1,7 @@
 {
-	"name": "nowjs",
-	"version": "0.1.8",
-	"description": "",
+	"name": "QureJS",
+	"version": "0.1.9",
+	"description": "Tiny library introducing easy design pattern.",
 	"private": true,
 	"author": {
 		"name": "Hakan Bilgin",
@@ -12,7 +12,8 @@
 		"javascript",
 		"concurrency",
 		"queueing",
-		"recursion"
+		"recursion",
+		"design pattern"
 	],
 	"license": {
 		"type": "MIT",
@@ -20,13 +21,13 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/hbi99/nowjs.js.git"
+		"url": "https://github.com/hbi99/QureJS.js.git"
 	},
 	"bugs": {
-		"url": "https://github.com/hbi99/nowjs.js/issues"
+		"url": "https://github.com/hbi99/QureJS.js/issues"
 	},
-	"homepage": "https://github.com/hbi99/nowjs.js",
-	"main": "./lib/nowjs",
+	"homepage": "https://github.com/hbi99/QureJS.js",
+	"main": "./dist/QureJS",
 	"dependencies": {},
 	"devDependencies": {
 		"grunt": "~0.4.2",
