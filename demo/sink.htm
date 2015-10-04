@@ -7,15 +7,24 @@
 </head>
 <body>
 
+<button onclick="play_qure();">Resume</button>
+
 <script type="text/javascript">
 
-Qure
-	.wait(1000).then(function() {
+var tmp = Qure
+	.wait(500)
+	.then(function() {
 		console.log(1);
 	})
-	.wait(1000).then(function() {
+	.pause()
+	.wait(1000)
+	.then(function() {
 		console.log(2);
 	});
+
+function play_qure() {
+	tmp.play();
+}
 
 </script>
 

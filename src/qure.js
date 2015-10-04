@@ -155,6 +155,8 @@
 			return this;
 		},
 		play: function() {
+			this.queue._paused = false;
+			this.queue.flush();
 			return this;
 		},
 		pause: function() {
