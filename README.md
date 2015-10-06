@@ -30,15 +30,17 @@ Qure.fork().wait(250).then(function() {
 ```
 
 ### To-do's
-- [ ] Play/pause support
 - [ ] Load-method in Node environment
-- [ ] Declare method?
-- [ ] Queue splice
 - [ ] Threaded recursion (web worker)
-- [ ] Node support
 - [ ] Metaphorical support for Confirm & Prompt?
 - [ ] Wait for 'Now' instance
 
+
+### Testing
+- [x] Precede queue
+- [x] Declare method?
+- [x] Play/pause support
+- [x] Node support
 
 
 ### Changelog

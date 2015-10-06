@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>QureJS - Play / Pause / Precede</title>
+<script type="text/javascript" src="../src/qure.js"></script>
+</head>
+<body>
+
+<button onclick="play_qure();">Resume</button>
+
+<script type="text/javascript">
+
+var tmp = Qure
+	.wait(500)
+	.then(function() {
+		console.log(1);
+	})
+	.pause()   // <-- stops execution
+	.wait(1000)
+	.then(function() {
+		console.log(2);
+	});
+
+function play_qure() {
+	// add a preceding function to the queue
+	tmp.precede(function() {
+		console.log(3);
+	});
+	// resume execution
+	tmp.play();
+}
+
+</script>
+
+</body>
+</html>
