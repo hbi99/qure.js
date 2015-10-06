@@ -17,9 +17,9 @@ var tmp = Qure
 		console.log(1);
 	})
 	.pause()   // <-- stops execution
-	.wait(1000)
-	.then(function() {
-		console.log(2);
+	.load('./test1.json')
+	.then(function(data) {
+		console.log(data);
 	});
 
 function play_qure() {
