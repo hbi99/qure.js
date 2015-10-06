@@ -10,8 +10,12 @@
 		this._paused = false;
 	}
 	Queue.prototype = {
-		add: function(fn) {
+		push: function(fn) {
 			this._methods.push(fn);
+			if (!this._paused) this.flush();
+		},
+		unshift: function(fn) {
+			this._methods.unshift(fn);
 			if (!this._paused) this.flush();
 		},
 		flush: function() {
@@ -91,7 +95,7 @@
 					}, duration || 0);
 				};
 			fn._paused = true;
-			this.queue.add(fn);
+			this.queue.push(fn);
 			return this;
 		},
 		then: function(fn) {
@@ -106,7 +110,7 @@
 					}
 					fn.apply(self.queue._that, args);
 				};
-			this.queue.add(func);
+			this.queue.push(func);
 			return this;
 		},
 		load: function(url, hash, key) {
@@ -125,7 +129,7 @@
 				return this;
 			}
 			fn._paused = true;
-			this.queue.add(fn);
+			this.queue.push(fn);
 			return this;
 		},
 		declare: function(fn) {
@@ -142,7 +146,7 @@
 					// prepeare recursion
 					recursion.fn = Function.apply({}, args);
 				};
-			this.queue.add(func);
+			this.queue.push(func);
 			return this;
 		},
 		run: function() {
@@ -151,7 +155,11 @@
 				fn = function() {
 					recursion.res = recursion.fn.apply(recursion, args);
 				};
-			this.queue.add(fn);
+			this.queue.push(fn);
+			return this;
+		},
+		precede: function(fn) {
+			this.queue.unshift(fn);
 			return this;
 		},
 		play: function() {
@@ -164,7 +172,7 @@
 
 				};
 			fn._paused = true;
-			this.queue.add(fn);
+			this.queue.push(fn);
 			return this;
 		}
 	};
