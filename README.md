@@ -30,20 +30,22 @@ Qure.fork().wait(250).then(function() {
 ```
 
 ### To-do's
+- [ ] 'this' in recursive functions
+- [ ] add 'begin' method ?
 - [ ] Load-method in Node environment
 - [ ] Threaded recursion (web worker)
-- [ ] Metaphorical support for Confirm & Prompt?
-- [ ] Wait for 'Now' instance
+- [ ] Metaphorical support for Confirm & Prompt ?
+- [ ] Wait for 'Qure' instance
 
 
 ### Testing
 - [x] Precede queue
-- [x] Declare method?
 - [x] Play/pause support
 - [x] Node support
 
 
 ### Changelog
+- [x] `0.2.1` Advanced 'declare' method
 - [x] `0.2.0` Published library as NPM module
 - [x] `0.1.9` Renamed the library to QureJS
 - [x] `0.1.8` Added test suite

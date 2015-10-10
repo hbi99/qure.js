@@ -61,7 +61,7 @@ module.exports = function (grunt) {
 					reporter: 'list'
 				},
 				src: [
-					'tests/test-02.js'
+					'tests/test-03.js'
 				]
 			}
 		}
@@ -74,6 +74,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-mocha-test');
 
 	// tests
+	grunt.registerTask('hint', [ 'jshint' ]);
 	grunt.registerTask('test', [ 'mochaTest' ]);
 
 	// version deployment
