@@ -3,7 +3,7 @@
  * 
  */
 
-var Qure = require('../dist/qure.js');
+var Qure = require('../src/qure.js');
 
 describe('Simple test of the methods "wait" and "then"', function() {
 

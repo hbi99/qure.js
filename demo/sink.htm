@@ -11,20 +11,21 @@
 
 <script type="text/javascript">
 
-var tmp = Qure
-	.wait(500)
-	.then(function() {
-		console.log(1);
+// fibonacci numbers
+Qure
+	.declare(function(n) {
+		return (n < 2) ? 1 : self(n-2) + self(n-1);
 	})
-	.pause()
-	.wait(1000)
-	.then(function() {
-		console.log(2);
+	.run(7)
+	.then(function(res) {
+		console.log(res);
+		// 21
+	})
+	.run(11)
+	.then(function(res) {
+		console.log(res);
+		// 144
 	});
-
-function play_qure() {
-	tmp.play();
-}
 
 </script>
 

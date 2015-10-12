@@ -2,6 +2,17 @@
 (function(window, module) {
 	'use strict';
 
+	// environment variables
+	var isNode = !!module.id;
+
+	// recursive requirements
+	var recursion = {
+			_globals: {
+				require : isNode ? require : false,
+				module  : isNode ? module  : false
+			}
+		};
+
 	// queuing mechanism
 	function Queue(owner, that) {
 		this._methods = [];
@@ -73,9 +84,6 @@
 		}
 	};
 
-	// recursive requirements
-	var recursion = {};
-
 	// QureJS class
 	function Qure() {
 		var that = {};
@@ -102,9 +110,9 @@
 			var self = this,
 				func = function() {
 					var args = [];
-					if (recursion.res) {
-						args.push(recursion.res);
-						delete recursion.res;
+					if (recursion._globals.res) {
+						args.push(recursion._globals.res);
+						delete recursion._globals.res;
 					} else {
 						args = arguments;
 					}
@@ -132,29 +140,39 @@
 			this.queue.push(fn);
 			return this;
 		},
-		declare: function(fn) {
+		declare: function(record) {
 			var func = function() {
-					var str  = fn.toString(),
-						args = str.match(/functio.+?\((.*?)\)/)[1].split(','),
+					var str,
+						args,
+						body;
+					for (var fn in record) {
+						if (typeof record[fn] !== 'function') {
+							recursion[fn] = record[fn];
+							continue;
+						}
+						str  = record[fn].toString();
+						args = str.match(/functio.+?\((.*?)\)/)[1].split(',');
 						body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
-
-					body = body.replace(/\bself\(/g, 'this.fn(');
-
-					// append function body
-					args.push(body);
-
-					// prepeare recursion
-					recursion.fn = Function.apply({}, args);
+						// modify function body
+						body = body.replace(/\bself\b/g,    'this._fn_'+ fn);
+						body = body.replace(/\brequire\b/g, 'this._globals.require');
+						body = body.replace(/\bmodule\b/g,  'this._globals.module');
+						// append function body
+						args.push(body);
+						// prepeare recursion
+						recursion['_fn_'+ fn] = Function.apply({}, args);
+					}
 				};
 			this.queue.push(func);
 			return this;
 		},
 		run: function() {
 			var self = this,
-				args = arguments,
+				args = [].slice.apply(arguments),
 				fn = function() {
-					recursion.res = recursion.fn.apply(recursion, args);
+					recursion._globals.res = recursion['_fn_'+ args.shift()].apply(recursion, args);
 				};
+			//fn._paused = true;
 			this.queue.push(fn);
 			return this;
 		},

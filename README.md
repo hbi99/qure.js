@@ -45,7 +45,7 @@ Qure.fork().wait(250).then(function() {
 
 
 ### Changelog
-- [x] `0.2.1` Advanced 'declare' method
+- [x] `0.2.1` Advanced 'declare' + 'run' method
 - [x] `0.2.0` Published library as NPM module
 - [x] `0.1.9` Renamed the library to QureJS
 - [x] `0.1.8` Added test suite

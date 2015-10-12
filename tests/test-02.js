@@ -3,19 +3,40 @@
  * 
  */
 
-var Qure = require('../dist/qure.js');
+var Qure = require('../src/qure.js');
 
-describe('Testing ajax loading', function() {
+describe('Testing recursion', function() {
 
 	/* 
-	 * Simple testing of the method 'load'
+	 * Simple testing of recursion with fibonacci numbers
 	 */
-	it('simple test should work fine', function(done) {
+	it('with fibonacci numbers', function(done) {
 		
 		Qure
-			.load('./demo/test1.json')
-			.then(function(data) {
-				console.log(data);
+			.declare({
+				// fibonacci numbers
+				fibonacci: function(n) {
+					return (n < 2) ? 1 : self(n-2) + self(n-1);
+				},
+				// factorial numbers
+				factorial: function(n) {
+					return (n <= 0) ? 1 : (n * self(n - 1));
+				}
+			})
+			.run('factorial', 6)
+			.then(function(res) {
+				// verify the result
+				if (res !== 720) {
+					console.log( '\tUnexpected value!' );
+				}
+			})
+			.run('fibonacci', 7)
+			.then(function(res) {
+				// verify the result
+				if (res !== 21) {
+					console.log( '\tUnexpected value!' );
+				}
+				done();
 			});
 		
 	});

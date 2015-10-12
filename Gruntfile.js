@@ -1,6 +1,7 @@
-'use strict';
 
 module.exports = function (grunt) {
+	'use strict';
+
 	grunt.initConfig({
 
 		// metadata
@@ -23,7 +24,7 @@ module.exports = function (grunt) {
 		// JShint source
 		jshint: {
 			files: {
-				src: '<%= meta.source %>'
+				src: ['Gruntfile.js', 'src/*', 'tests/*']
 			}
 		},
 
@@ -81,7 +82,7 @@ module.exports = function (grunt) {
 	grunt.registerTask('default', [
 		'jshint',
 		'concat:latest',
-    	'uglify:latest'
+		'uglify:latest'
 	]);
 
 };
