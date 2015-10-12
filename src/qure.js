@@ -144,7 +144,13 @@
 			var func = function() {
 					var str,
 						args,
-						body;
+						body,
+						rec;
+					if (typeof(record) === 'function') {
+						rec = {};
+						rec['single_recursive_func'] = record;
+						record = rec;
+					}
 					for (var fn in record) {
 						if (typeof record[fn] !== 'function') {
 							recursion[fn] = record[fn];
@@ -170,7 +176,8 @@
 			var self = this,
 				args = [].slice.apply(arguments),
 				fn = function() {
-					recursion._globals.res = recursion['_fn_'+ args.shift()].apply(recursion, args);
+					var name = (recursion._fn_single_recursive_func) ? 'single_recursive_func' : args.shift();
+					recursion._globals.res = recursion['_fn_'+ name].apply(recursion, args);
 				};
 			//fn._paused = true;
 			this.queue.push(fn);
