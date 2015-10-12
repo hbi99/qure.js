@@ -144,12 +144,11 @@
 			var func = function() {
 					var str,
 						args,
-						body,
-						rec;
+						body;
 					if (typeof(record) === 'function') {
-						rec = {};
-						rec['single_recursive_func'] = record;
-						record = rec;
+						record = {
+							single_recursive_func: record
+						};
 					}
 					for (var fn in record) {
 						if (typeof record[fn] !== 'function') {
