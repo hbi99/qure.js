@@ -188,13 +188,11 @@
 		},
 		play: function() {
 			this.queue._paused = false;
-			this.queue.flush();
+			this.queue.flush.apply(this.queue, arguments);
 			return this;
 		},
 		pause: function() {
-			var fn = function() {
-
-				};
+			var fn = function() {};
 			fn._paused = true;
 			this.queue.push(fn);
 			return this;
