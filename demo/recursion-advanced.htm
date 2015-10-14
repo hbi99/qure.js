@@ -12,9 +12,6 @@
 // recursive functions
 Qure
 	.declare({
-		test: function(n) {
-			console.log(this);
-		},
 		// fibonacci numbers
 		fibonacci: function(n) {
 			return (n < 2) ? 1 : self(n-2) + self(n-1);
@@ -24,15 +21,14 @@ Qure
 			return (n <= 0) ? 1 : (n * self(n - 1));
 		}
 	})
-	.run('test', 3)
-//	.run('factorial', 3)
-//	.then(function(res) {
-//		console.log(res);  // 6
-//	})
-//	.run('fibonacci', 2)
-//	.then(function(res) {
-//		console.log(res);  // 2
-//	})
+	.run('factorial', 6)
+	.then(function(res) {
+		console.log(res);  // 720
+	})
+	.run('fibonacci', 7)
+	.then(function(res) {
+		console.log(res);  // 21
+	})
 ;
 
 

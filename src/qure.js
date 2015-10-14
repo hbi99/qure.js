@@ -88,6 +88,12 @@
 	function Qure() {
 		var that = {};
 		this.queue = new Queue(this, that);
+
+		this._globals = {
+				require : isNode ? require : false,
+				module  : isNode ? module  : false
+			};
+
 		return this;
 	}
 	Qure.prototype = {
@@ -110,9 +116,9 @@
 			var self = this,
 				func = function() {
 					var args = [];
-					if (recursion._globals.res) {
-						args.push(recursion._globals.res);
-						delete recursion._globals.res;
+					if (self._globals.res) {
+						args.push(self._globals.res);
+						delete self._globals.res;
 					} else {
 						args = arguments;
 					}
@@ -141,7 +147,8 @@
 			return this;
 		},
 		declare: function(record) {
-			var func = function() {
+			var self = this,
+				func = function() {
 					var str,
 						args,
 						body;
@@ -165,7 +172,7 @@
 						// append function body
 						args.push(body);
 						// prepeare recursion
-						recursion['_fn_'+ fn] = Function.apply({}, args);
+						self['_fn_'+ fn] = Function.apply({}, args);
 					}
 				};
 			this.queue.push(func);
@@ -175,8 +182,8 @@
 			var self = this,
 				args = [].slice.apply(arguments),
 				fn = function() {
-					var name = (recursion._fn_single_recursive_func) ? 'single_recursive_func' : args.shift();
-					recursion._globals.res = recursion['_fn_'+ name].apply(recursion, args);
+					var name = (self._fn_single_recursive_func) ? 'single_recursive_func' : args.shift();
+					self._globals.res = self['_fn_'+ name].apply(self, args);
 				};
 			//fn._paused = true;
 			this.queue.push(fn);
@@ -186,13 +193,13 @@
 			this.queue.unshift(fn);
 			return this;
 		},
-		play: function() {
+		resume: function() {
 			this.queue._paused = false;
 			this.queue.flush.apply(this.queue, arguments);
 			return this;
 		},
-		pause: function() {
-			var fn = function() {};
+		pause: function(fn) {
+			fn = fn || function() {};
 			fn._paused = true;
 			this.queue.push(fn);
 			return this;
