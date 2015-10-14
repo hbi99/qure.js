@@ -14,10 +14,7 @@
 		"recursion",
 		"design pattern"
 	],
-	"license": {
-		"type": "MIT",
-		"url": "http://mit-license.org/"
-	},
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/hbi99/QureJS.js.git"
@@ -29,6 +26,7 @@
 	"main": "./dist/QureJS",
 	"dependencies": {},
 	"devDependencies": {
+		"mysql": "^2.9.0",
 		"grunt": "~0.4.2",
 		"grunt-contrib-concat": "~0.3.0",
 		"grunt-contrib-jshint": "~0.8.0",
