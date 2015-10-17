@@ -4,7 +4,7 @@
  * https://github.com/hbi99/QureJS.js 
  * 
  * Copyright (c) 2013-2015, Hakan Bilgin <hbi@longscript.com> 
- * Licensed under the MIT License 
+ * Licensed under the  License 
  */ 
 
 (function(window, module) {
@@ -96,6 +96,12 @@
 	function Qure() {
 		var that = {};
 		this.queue = new Queue(this, that);
+
+		this._globals = {
+				require : isNode ? require : false,
+				module  : isNode ? module  : false
+			};
+
 		return this;
 	}
 	Qure.prototype = {
@@ -118,9 +124,9 @@
 			var self = this,
 				func = function() {
 					var args = [];
-					if (recursion._globals.res) {
-						args.push(recursion._globals.res);
-						delete recursion._globals.res;
+					if (self._globals.res) {
+						args.push(self._globals.res);
+						delete self._globals.res;
 					} else {
 						args = arguments;
 					}
@@ -149,10 +155,16 @@
 			return this;
 		},
 		declare: function(record) {
-			var func = function() {
+			var self = this,
+				func = function() {
 					var str,
 						args,
 						body;
+					if (typeof(record) === 'function') {
+						record = {
+							single_recursive_func: record
+						};
+					}
 					for (var fn in record) {
 						if (typeof record[fn] !== 'function') {
 							recursion[fn] = record[fn];
@@ -168,7 +180,7 @@
 						// append function body
 						args.push(body);
 						// prepeare recursion
-						recursion['_fn_'+ fn] = Function.apply({}, args);
+						self['_fn_'+ fn] = Function.apply({}, args);
 					}
 				};
 			this.queue.push(func);
@@ -178,8 +190,10 @@
 			var self = this,
 				args = [].slice.apply(arguments),
 				fn = function() {
-					recursion._globals.res = recursion['_fn_'+ args.shift()].apply(recursion, args);
+					var name = (self._fn_single_recursive_func) ? 'single_recursive_func' : args.shift();
+					self._globals.res = self['_fn_'+ name].apply(self, args);
 				};
+			//fn._paused = true;
 			this.queue.push(fn);
 			return this;
 		},
@@ -187,15 +201,13 @@
 			this.queue.unshift(fn);
 			return this;
 		},
-		play: function() {
+		resume: function() {
 			this.queue._paused = false;
-			this.queue.flush();
+			this.queue.flush.apply(this.queue, arguments);
 			return this;
 		},
-		pause: function() {
-			var fn = function() {
-
-				};
+		pause: function(fn) {
+			fn = fn || function() {};
 			fn._paused = true;
 			this.queue.push(fn);
 			return this;

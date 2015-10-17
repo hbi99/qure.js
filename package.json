@@ -1,12 +1,14 @@
 {
 	"name": "qure",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "Tiny library introducing an easy design pattern.",
 	"author": {
 		"name": "Hakan Bilgin",
 		"email": "hbi@longscript.com",
 		"url": "https://github.com/hbi99"
 	},
+	"homepage": "https://github.com/hbi99/QureJS.js",
+	"main": "./dist/qurejs",
 	"keywords": [
 		"javascript",
 		"concurrency",
@@ -22,8 +24,10 @@
 	"bugs": {
 		"url": "https://github.com/hbi99/QureJS.js/issues"
 	},
-	"homepage": "https://github.com/hbi99/QureJS.js",
-	"main": "./dist/QureJS",
+	"scripts": {
+		"tests": "grunt test",
+		"build": "grunt"
+	},
 	"dependencies": {},
 	"devDependencies": {
 		"mysql": "^2.9.0",

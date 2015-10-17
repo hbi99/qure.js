@@ -44,6 +44,142 @@
 		}
 	};
 
+	// observer
+	var observer = function() {
+		var stack = {};
+
+		return {
+			on: function(type, fn) {
+				if (!stack[type]) {
+					stack[type] = [];
+				}
+				stack[type].unshift(fn);
+			},
+			off: function(type, fn) {
+				if (!stack[type]) return;
+				var i = stack[type].indexOf(fn);
+				stack[type].splice(i,1);
+			},
+			emit: function(type, detail) {
+				if (!stack[type]) return;
+				var event = {
+						type         : type,
+						detail       : detail,
+						isCanceled   : false,
+						cancelBubble : function() {
+							this.isCanceled = true;
+						}
+					},
+					len = stack[type].length;
+				while(len--) {
+					if (event.isCanceled) return;
+					stack[type][len](event);
+				}
+			}
+		};
+	};
+
+	// thread enabler
+	var thread = {
+		init: function() {
+			return this;
+		},
+		work_handler: function(event) {
+			var args = Array.prototype.slice.call(event.data, 1),
+				func = event.data[0],
+				ret  = tree[func].apply(tree, args);
+
+			// return process finish
+			postMessage([func, ret]);
+		},
+		setup: function(tree) {
+			var url    = window.URL || window.webkitURL,
+				script = 'var tree = {'+ this.parse(tree).join(',') +'};',
+				blob   = new Blob([script + 'self.addEventListener("message", '+ this.work_handler.toString() +', false);'],
+									{type: 'text/javascript'}),
+				worker = new Worker(url.createObjectURL(blob));
+			
+			// thread pipe
+			worker.onmessage = function(event) {
+				var args = Array.prototype.slice.call(event.data, 1),
+					func = event.data[0];
+				thread.observer.emit('thread:'+ func, args);
+			};
+
+			return worker;
+		},
+		call_handler: function(func, worker, callback) {
+			return function() {
+				var args = Array.prototype.slice.call(arguments);
+
+				// add method name
+				args.unshift(func);
+
+				// listen for 'done'
+				thread.observer.on('thread:'+ func, function(event) {
+					callback(event.detail[0]);
+				});
+
+				// start worker
+				worker.postMessage(args);
+			};
+		},
+		compile: function(hash, callback) {
+			var isFunc = typeof(hash) === 'function',
+				worker = this.setup(isFunc ? {func: hash} : hash),
+				obj    = {},
+				fn;
+			// create return object
+			if (isFunc) {
+				obj.func = this.call_handler('func', worker, callback);
+				return obj.func;
+			} else {
+				for (fn in hash) {
+					obj[fn] = this.call_handler(fn, worker, callback);
+				}
+				return obj;
+			}
+		},
+		parse: function(tree, isArray) {
+			var hash = [],
+				key,
+				val,
+				v;
+
+			for (key in tree) {
+				v = tree[key];
+				// handle null
+				if (v === null) {
+					hash.push(key +':null');
+					continue;
+				}
+				// handle undefined
+				if (v === undefined) {
+					hash.push(key +':undefined');
+					continue;
+				}
+				switch (v.constructor) {
+					case Date:     val = 'new Date('+ v.valueOf() +')';           break;
+					case Object:   val = '{'+ this.parse(v).join(',') +'}';       break;
+					case Array:    val = '['+ this.parse(v, true).join(',') +']'; break;
+					case String:   val = '"'+ v.replace(/"/g, '\\"') +'"';        break;
+					case RegExp:
+					case Function:
+						val = v.toString();
+						val = val.replace(/\bself\b/g, 'this.'+ key);
+						break;
+					default:
+						val = v;
+				}
+				if (isArray) hash.push(val);
+				else hash.push(key +':'+ val);
+			}
+			return hash;
+		},
+		// simple event emitter
+		observer: observer()
+	};
+
 	// cors request
 	function CORSreq(owner, url, hash, key) {
 		var method = 'GET',
@@ -178,12 +314,28 @@
 			this.queue.push(func);
 			return this;
 		},
+		thread: function(record) {
+			var self = this,
+				func = function() {
+					self._compiled = thread.compile(record, function() {
+						self.resume.apply(self, arguments);
+					});
+				};
+			this.queue.unshift(func);
+			return this;
+		},
 		run: function() {
 			var self = this,
 				args = [].slice.apply(arguments),
 				fn = function() {
 					var name = (self._fn_single_recursive_func) ? 'single_recursive_func' : args.shift();
-					self._globals.res = self['_fn_'+ name].apply(self, args);
+
+					if (self['_fn_'+ name]) {
+						self._globals.res = self['_fn_'+ name].apply(self, args);
+					} else {
+						self.pause();
+						self._compiled[name].apply(self, args);
+					}
 				};
 			//fn._paused = true;
 			this.queue.push(fn);
@@ -201,7 +353,7 @@
 		pause: function(fn) {
 			fn = fn || function() {};
 			fn._paused = true;
-			this.queue.push(fn);
+			this.queue.unshift(fn);
 			return this;
 		}
 	};
