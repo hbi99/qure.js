@@ -62,7 +62,7 @@ module.exports = function (grunt) {
 					reporter: 'list'
 				},
 				src: [
-					'tests/test-03.js'
+					'tests/test-04.js'
 				]
 			}
 		}

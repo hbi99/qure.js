@@ -1,12 +1,14 @@
 {
 	"name": "qure",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "Tiny library introducing an easy design pattern.",
 	"author": {
 		"name": "Hakan Bilgin",
 		"email": "hbi@longscript.com",
 		"url": "https://github.com/hbi99"
 	},
+	"homepage": "https://github.com/hbi99/QureJS.js",
+	"main": "./dist/qurejs",
 	"keywords": [
 		"javascript",
 		"concurrency",
@@ -14,10 +16,7 @@
 		"recursion",
 		"design pattern"
 	],
-	"license": {
-		"type": "MIT",
-		"url": "http://mit-license.org/"
-	},
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/hbi99/QureJS.js.git"
@@ -25,10 +24,13 @@
 	"bugs": {
 		"url": "https://github.com/hbi99/QureJS.js/issues"
 	},
-	"homepage": "https://github.com/hbi99/QureJS.js",
-	"main": "./dist/QureJS",
+	"scripts": {
+		"tests": "grunt test",
+		"build": "grunt"
+	},
 	"dependencies": {},
 	"devDependencies": {
+		"mysql": "^2.9.0",
 		"grunt": "~0.4.2",
 		"grunt-contrib-concat": "~0.3.0",
 		"grunt-contrib-jshint": "~0.8.0",
