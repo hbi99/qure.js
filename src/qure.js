@@ -144,32 +144,32 @@
 			var hash = [],
 				key,
 				val,
-				v;
+				prop;
 
 			for (key in tree) {
-				v = tree[key];
+				prop = tree[key];
 				// handle null
-				if (v === null) {
+				if (prop === null) {
 					hash.push(key +':null');
 					continue;
 				}
 				// handle undefined
-				if (v === undefined) {
+				if (prop === undefined) {
 					hash.push(key +':undefined');
 					continue;
 				}
-				switch (v.constructor) {
-					case Date:     val = 'new Date('+ v.valueOf() +')';           break;
-					case Object:   val = '{'+ this.parse(v).join(',') +'}';       break;
-					case Array:    val = '['+ this.parse(v, true).join(',') +']'; break;
-					case String:   val = '"'+ v.replace(/"/g, '\\"') +'"';        break;
+				switch (prop.constructor) {
+					case Date:     val = 'new Date('+ prop.valueOf() +')';           break;
+					case Object:   val = '{'+ this.parse(prop).join(',') +'}';       break;
+					case Array:    val = '['+ this.parse(prop, true).join(',') +']'; break;
+					case String:   val = '"'+ prop.replace(/"/g, '\\"') +'"';        break;
 					case RegExp:
 					case Function:
-						val = v.toString();
+						val = prop.toString();
 						val = val.replace(/\bself\b/g, 'this.'+ key);
 						break;
 					default:
-						val = v;
+						val = prop;
 				}
 				if (isArray) hash.push(val);
 				else hash.push(key +':'+ val);
