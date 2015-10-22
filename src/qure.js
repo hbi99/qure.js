@@ -159,10 +159,10 @@
 					continue;
 				}
 				switch (prop.constructor) {
-					case Date:     val = 'new Date('+ prop.valueOf() +')';           break;
-					case Object:   val = '{'+ this.parse(prop).join(',') +'}';       break;
-					case Array:    val = '['+ this.parse(prop, true).join(',') +']'; break;
-					case String:   val = '"'+ prop.replace(/"/g, '\\"') +'"';        break;
+					case Date:   val = 'new Date('+ prop.valueOf() +')';           break;
+					case Object: val = '{'+ this.parse(prop).join(',') +'}';       break;
+					case Array:  val = '['+ this.parse(prop, true).join(',') +']'; break;
+					case String: val = '"'+ prop.replace(/"/g, '\\"') +'"';        break;
 					case RegExp:
 					case Function:
 						val = prop.toString();
@@ -225,11 +225,6 @@
 		var that = {};
 		this.queue = new Queue(this, that);
 
-		this._globals = {
-				require : isNode ? require : false,
-				module  : isNode ? module  : false
-			};
-
 		return this;
 	}
 	Qure.prototype = {
@@ -252,9 +247,9 @@
 			var self = this,
 				func = function() {
 					var args = [];
-					if (self._globals.res) {
-						args.push(self._globals.res);
-						delete self._globals.res;
+					if (recursion._globals.res) {
+						args.push(recursion._globals.res);
+						delete recursion._globals.res;
 					} else {
 						args = arguments;
 					}
@@ -302,13 +297,21 @@
 						args = str.match(/functio.+?\((.*?)\)/)[1].split(',');
 						body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
 						// modify function body
-						body = body.replace(/\bself\b/g,    'this._fn_'+ fn);
+						body = body.replace(/\bself\b/g,    'this.'+ fn);
 						body = body.replace(/\brequire\b/g, 'this._globals.require');
 						body = body.replace(/\bmodule\b/g,  'this._globals.module');
+						// shortcut to qure functions
+						body = body.replace(/\bthis.pause\b/g,   'this._globals.qure.pause');
+						body = body.replace(/\bthis.precede\b/g, 'this._globals.qure.precede');
+						body = body.replace(/\bthis.then\b/g,    'this._globals.qure.then');
+						body = body.replace(/\bthis.resume\b/g,  'this._globals.qure.resume');
+						// run, fork, load, declare, wait
+						//console.log( body );
+
 						// append function body
 						args.push(body);
 						// prepeare recursion
-						self['_fn_'+ fn] = Function.apply({}, args);
+						recursion[fn] = Function.apply({}, args);
 					}
 				};
 			this.queue.push(func);
@@ -328,13 +331,14 @@
 			var self = this,
 				args = [].slice.apply(arguments),
 				fn = function() {
-					var name = (self._fn_single_recursive_func) ? 'single_recursive_func' : args.shift();
+					var name = (recursion.single_recursive_func) ? 'single_recursive_func' : args.shift();
 
-					if (self['_fn_'+ name]) {
-						self._globals.res = self['_fn_'+ name].apply(self, args);
+					if (recursion[name]) {
+						recursion._globals.qure = self;
+						recursion._globals.res = recursion[name].apply(recursion, args);
 					} else {
 						self.pause();
-						self._compiled[name].apply(self, args);
+						self._compiled[name].apply(recursion, args);
 					}
 				};
 			//fn._paused = true;
