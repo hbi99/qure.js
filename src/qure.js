@@ -13,6 +13,8 @@
 			}
 		};
 
+	var workFunc = {};
+
 	// queuing mechanism
 	function Queue(owner, that) {
 		this._methods = [];
@@ -44,7 +46,7 @@
 		}
 	};
 
-	// observer
+	// observer mechanism
 	var observer = function() {
 		var stack = {};
 
@@ -124,13 +126,15 @@
 				worker.postMessage(args);
 			};
 		},
-		compile: function(func, callback) {
-			var worker = this.setup(func),
+		compile: function(record, callback) {
+			var worker = this.setup(record),
 				obj    = {},
 				fn;
 			// create return object
-			obj.func = this.call_handler('func', worker, callback);
-			return obj.func;
+			for (fn in record) {
+				obj[fn] = this.call_handler(fn, worker, callback);
+			}
+			return obj;
 		},
 		parse: function(tree, isArray) {
 			var hash = [],
@@ -295,75 +299,36 @@
 		declare: function(record) {
 			var self = this,
 				func = function() {
-					var rec = {},
+					var tRecord = {},
 						str,
 						args,
 						body,
+						key,
+						val,
+						prop,
 						fn;
 					if (typeof(record) === 'function') {
 						record = {
 							single_anonymous_func: record
 						};
 					}
-					for (fn in record) {
-						if (fn.slice(-4) === 'Sync') {
-							syncFunc[fn] = thread.parseFunc(fn, record[fn]);
-						} else {
-							rec[fn] = record[fn];
-						}
-					}
-				};
-			this.queue.push(func);
-			return this;
-		},
-		declare2: function(record) {
-			var self = this,
-				func = function() {
-					var str,
-						args,
-						body;
-					if (typeof(record) === 'function') {
-						record = {
-							single_anonymous_func: record
-						};
-					}
-					for (var fn in record) {
-						if (typeof record[fn] !== 'function') {
-							syncFunc[fn] = record[fn];
+					for (key in record) {
+						prop = record[key];
+						if (prop.constructor !== Function) {
 							continue;
 						}
-						str  = record[fn].toString();
-						args = str.match(/functio.+?\((.*?)\)/)[1].split(',');
-						body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
-						// modify function body
-						body = body.replace(/\bself\b/g,    'this.'+ fn);
-						body = body.replace(/\brequire\b/g, 'this._globals.require');
-						body = body.replace(/\bmodule\b/g,  'this._globals.module');
-						// shortcut to qure functions
-						body = body.replace(/\bthis.pause\b/g,   'this._globals.qure.pause');
-						body = body.replace(/\bthis.precede\b/g, 'this._globals.qure.precede');
-						body = body.replace(/\bthis.then\b/g,    'this._globals.qure.then');
-						body = body.replace(/\bthis.resume\b/g,  'this._globals.qure.resume');
-						// run, fork, load, declare, wait
-						//console.log( body );
-
-						// append function body
-						args.push(body);
-						// prepeare syncFunc
-						syncFunc[fn] = Function.apply({}, args);
+						if (key.slice(-4) === 'Sync') {
+							syncFunc[key] = thread.parseFunc(key, record[key]);
+						} else {
+							tRecord[key] = record[key];
+						}
 					}
-				};
-			this.queue.push(func);
-			return this;
-		},
-		thread: function(record) {
-			var self = this,
-				func = function() {
-					self._compiled = thread.compile(record, function() {
+					// compile threaded functions
+					workFunc = thread.compile(tRecord, function() {
 						self.resume.apply(self, arguments);
 					});
 				};
-			this.queue.unshift(func);
+			this.queue.push(func);
 			return this;
 		},
 		run: function() {
@@ -377,7 +342,8 @@
 						syncFunc._globals.res = syncFunc[name].apply(syncFunc, args);
 					} else {
 						self.pause();
-						self._compiled[name].apply(syncFunc, args);
+						// call threaded function
+						workFunc[name].apply(workFunc, args);
 					}
 				};
 			//fn._paused = true;
