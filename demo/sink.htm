@@ -11,13 +11,21 @@
 
 Qure
 	.declare({
+		a: 2,
+		b: [3.4, 2],
 		// fibonacci numbers
 		fibonacci: function(n) {
-			console.log(this);
 			return (n < 2) ? 1 : self(n-2) + self(n-1);
+		},
+		fibonacciSync: function(n) {
+			return (n < 2) ? 1 : self(n-2) + self(n-1);
+		},
+		fooSync: function() {
+			console.log(this);
 		}
 	})
-	.run('fibonacci', 3)
+//	.run('fibonacciSync', 7)
+	.run('fibonacci', 7)
 	.then(function(res) {
 		console.log(res);
 	})

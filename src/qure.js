@@ -6,7 +6,7 @@
 	var isNode = !!module.id;
 
 	// recursive requirements
-	var recursion = {
+	var syncFunc = {
 			_globals: {
 				require : isNode ? require : false,
 				module  : isNode ? module  : false
@@ -95,7 +95,7 @@
 		setup: function(tree) {
 			var url    = window.URL || window.webkitURL,
 				script = 'var tree = {'+ this.parse(tree).join(',') +'};',
-				blob   = new Blob([script + 'self.addEventListener("message", '+ this.work_handler.toString() +', false);'],
+				blob   = new Blob([script +'self.addEventListener("message", '+ this.work_handler.toString() +', false);'],
 									{type: 'text/javascript'}),
 				worker = new Worker(url.createObjectURL(blob));
 			
@@ -124,21 +124,13 @@
 				worker.postMessage(args);
 			};
 		},
-		compile: function(hash, callback) {
-			var isFunc = typeof(hash) === 'function',
-				worker = this.setup(isFunc ? {func: hash} : hash),
+		compile: function(func, callback) {
+			var worker = this.setup(func),
 				obj    = {},
 				fn;
 			// create return object
-			if (isFunc) {
-				obj.func = this.call_handler('func', worker, callback);
-				return obj.func;
-			} else {
-				for (fn in hash) {
-					obj[fn] = this.call_handler(fn, worker, callback);
-				}
-				return obj;
-			}
+			obj.func = this.call_handler('func', worker, callback);
+			return obj.func;
 		},
 		parse: function(tree, isArray) {
 			var hash = [],
@@ -175,6 +167,29 @@
 				else hash.push(key +':'+ val);
 			}
 			return hash;
+		},
+		parseFunc: function(name, func) {
+			var str = func.toString(),
+				args,
+				body;
+			args = str.match(/functio.+?\((.*?)\)/)[1].split(',');
+			body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
+			// modify function body
+			body = body.replace(/\bself\b/g,    'this.'+ name);
+			body = body.replace(/\brequire\b/g, 'this._globals.require');
+			body = body.replace(/\bmodule\b/g,  'this._globals.module');
+			// shortcut to qure functions
+			body = body.replace(/\bthis.pause\b/g,   'this._globals.qure.pause');
+			body = body.replace(/\bthis.precede\b/g, 'this._globals.qure.precede');
+			body = body.replace(/\bthis.then\b/g,    'this._globals.qure.then');
+			body = body.replace(/\bthis.resume\b/g,  'this._globals.qure.resume');
+			// run, fork, load, declare, wait
+			//console.log( body );
+
+			// append function body
+			args.push(body);
+			// return parse function body
+			return Function.apply({}, args);
 		},
 		// simple event emitter
 		observer: observer()
@@ -247,9 +262,9 @@
 			var self = this,
 				func = function() {
 					var args = [];
-					if (recursion._globals.res) {
-						args.push(recursion._globals.res);
-						delete recursion._globals.res;
+					if (syncFunc._globals.res) {
+						args.push(syncFunc._globals.res);
+						delete syncFunc._globals.res;
 					} else {
 						args = arguments;
 					}
@@ -280,17 +295,41 @@
 		declare: function(record) {
 			var self = this,
 				func = function() {
+					var rec = {},
+						str,
+						args,
+						body,
+						fn;
+					if (typeof(record) === 'function') {
+						record = {
+							single_anonymous_func: record
+						};
+					}
+					for (fn in record) {
+						if (fn.slice(-4) === 'Sync') {
+							syncFunc[fn] = thread.parseFunc(fn, record[fn]);
+						} else {
+							rec[fn] = record[fn];
+						}
+					}
+				};
+			this.queue.push(func);
+			return this;
+		},
+		declare2: function(record) {
+			var self = this,
+				func = function() {
 					var str,
 						args,
 						body;
 					if (typeof(record) === 'function') {
 						record = {
-							single_recursive_func: record
+							single_anonymous_func: record
 						};
 					}
 					for (var fn in record) {
 						if (typeof record[fn] !== 'function') {
-							recursion[fn] = record[fn];
+							syncFunc[fn] = record[fn];
 							continue;
 						}
 						str  = record[fn].toString();
@@ -310,8 +349,8 @@
 
 						// append function body
 						args.push(body);
-						// prepeare recursion
-						recursion[fn] = Function.apply({}, args);
+						// prepeare syncFunc
+						syncFunc[fn] = Function.apply({}, args);
 					}
 				};
 			this.queue.push(func);
@@ -331,14 +370,14 @@
 			var self = this,
 				args = [].slice.apply(arguments),
 				fn = function() {
-					var name = (recursion.single_recursive_func) ? 'single_recursive_func' : args.shift();
+					var name = (syncFunc.single_anonymous_func) ? 'single_anonymous_func' : args.shift();
 
-					if (recursion[name]) {
-						recursion._globals.qure = self;
-						recursion._globals.res = recursion[name].apply(recursion, args);
+					if (syncFunc[name]) {
+						syncFunc._globals.qure = self;
+						syncFunc._globals.res = syncFunc[name].apply(syncFunc, args);
 					} else {
 						self.pause();
-						self._compiled[name].apply(recursion, args);
+						self._compiled[name].apply(syncFunc, args);
 					}
 				};
 			//fn._paused = true;

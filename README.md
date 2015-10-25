@@ -30,7 +30,7 @@ Qure.fork().wait(250).then(function() {
 ```
 
 ### To-do's
-- [ ] Add ability to modify Qure - for debug purposes
+- [ ] Add 'settings' method - debug purpose
 - [ ] Add 'begin' method ?
 - [ ] Load-method in Node environment
 - [ ] Metaphorical support for Confirm & Prompt ?
