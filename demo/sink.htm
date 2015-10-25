@@ -12,12 +12,19 @@
 Qure
 	.declare({
 		// fibonacci numbers
-		fibonacci: function(n) {
-			console.log(this);
+		fibonacciSync: function(n) {
 			return (n < 2) ? 1 : self(n-2) + self(n-1);
 		}
 	})
-	.run('fibonacci', 3)
+	.declare({
+		barSync: function() {
+			return this.fibonacciSync(7);
+		}
+	})
+//	.run('fibonacciSync', 41)
+//	.run('fibonacci', 41)
+//	.run('foo')
+	.run('barSync')
 	.then(function(res) {
 		console.log(res);
 	})

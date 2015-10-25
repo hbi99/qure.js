@@ -6,12 +6,14 @@
 	var isNode = !!module.id;
 
 	// recursive requirements
-	var recursion = {
+	var syncFunc = {
 			_globals: {
 				require : isNode ? require : false,
 				module  : isNode ? module  : false
 			}
 		};
+
+	var workFunc = {};
 
 	// queuing mechanism
 	function Queue(owner, that) {
@@ -44,7 +46,7 @@
 		}
 	};
 
-	// observer
+	// observer mechanism
 	var observer = function() {
 		var stack = {};
 
@@ -80,7 +82,7 @@
 	};
 
 	// thread enabler
-	var thread = {
+	var x10 = {
 		init: function() {
 			return this;
 		},
@@ -95,7 +97,7 @@
 		setup: function(tree) {
 			var url    = window.URL || window.webkitURL,
 				script = 'var tree = {'+ this.parse(tree).join(',') +'};',
-				blob   = new Blob([script + 'self.addEventListener("message", '+ this.work_handler.toString() +', false);'],
+				blob   = new Blob([script +'self.addEventListener("message", '+ this.work_handler.toString() +', false);'],
 									{type: 'text/javascript'}),
 				worker = new Worker(url.createObjectURL(blob));
 			
@@ -103,41 +105,35 @@
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
 					func = event.data[0];
-				thread.observer.emit('thread:'+ func, args);
+				x10.observer.emit('thread:'+ func, args);
 			};
 
 			return worker;
 		},
 		call_handler: function(func, worker, callback) {
 			return function() {
-				var args = Array.prototype.slice.call(arguments);
+				var args = [].slice.call(arguments),
+					fn = function(event) {
+						x10.observer.off('thread:'+ func, fn);
+						callback(event.detail[0]);
+					};
 
 				// add method name
 				args.unshift(func);
 
 				// listen for 'done'
-				thread.observer.on('thread:'+ func, function(event) {
-					callback(event.detail[0]);
-				});
+				x10.observer.on('thread:'+ func, fn);
 
 				// start worker
 				worker.postMessage(args);
 			};
 		},
-		compile: function(hash, callback) {
-			var isFunc = typeof(hash) === 'function',
-				worker = this.setup(isFunc ? {func: hash} : hash),
-				obj    = {},
+		compile: function(record, callback) {
+			var worker = this.setup(record),
 				fn;
 			// create return object
-			if (isFunc) {
-				obj.func = this.call_handler('func', worker, callback);
-				return obj.func;
-			} else {
-				for (fn in hash) {
-					obj[fn] = this.call_handler(fn, worker, callback);
-				}
-				return obj;
+			for (fn in record) {
+				workFunc[fn] = this.call_handler(fn, worker, callback);
 			}
 		},
 		parse: function(tree, isArray) {
@@ -175,6 +171,29 @@
 				else hash.push(key +':'+ val);
 			}
 			return hash;
+		},
+		parseFunc: function(name, func) {
+			var str = func.toString(),
+				args,
+				body;
+			args = str.match(/functio.+?\((.*?)\)/)[1].split(',');
+			body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
+			// modify function body
+			body = body.replace(/\bself\b/g,    'this.'+ name);
+			body = body.replace(/\brequire\b/g, 'this._globals.require');
+			body = body.replace(/\bmodule\b/g,  'this._globals.module');
+			// shortcut to qure functions
+			body = body.replace(/\bthis.pause\b/g,   'this._globals.qure.pause');
+			body = body.replace(/\bthis.precede\b/g, 'this._globals.qure.precede');
+			body = body.replace(/\bthis.then\b/g,    'this._globals.qure.then');
+			body = body.replace(/\bthis.resume\b/g,  'this._globals.qure.resume');
+			// run, fork, load, declare, wait
+			//console.log( body );
+
+			// append function body
+			args.push(body);
+			// return parse function body
+			return Function.apply({}, args);
 		},
 		// simple event emitter
 		observer: observer()
@@ -247,9 +266,9 @@
 			var self = this,
 				func = function() {
 					var args = [];
-					if (recursion._globals.res) {
-						args.push(recursion._globals.res);
-						delete recursion._globals.res;
+					if (syncFunc._globals.res) {
+						args.push(syncFunc._globals.res);
+						delete syncFunc._globals.res;
 					} else {
 						args = arguments;
 					}
@@ -280,68 +299,54 @@
 		declare: function(record) {
 			var self = this,
 				func = function() {
-					var str,
-						args,
-						body;
+					var tRecord = {},
+						key,
+						prop;
 					if (typeof(record) === 'function') {
 						record = {
-							single_recursive_func: record
+							single_anonymous_func: record
 						};
 					}
-					for (var fn in record) {
-						if (typeof record[fn] !== 'function') {
-							recursion[fn] = record[fn];
+					for (key in record) {
+						prop = record[key];
+						if (prop.constructor !== Function) {
 							continue;
 						}
-						str  = record[fn].toString();
-						args = str.match(/functio.+?\((.*?)\)/)[1].split(',');
-						body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
-						// modify function body
-						body = body.replace(/\bself\b/g,    'this.'+ fn);
-						body = body.replace(/\brequire\b/g, 'this._globals.require');
-						body = body.replace(/\bmodule\b/g,  'this._globals.module');
-						// shortcut to qure functions
-						body = body.replace(/\bthis.pause\b/g,   'this._globals.qure.pause');
-						body = body.replace(/\bthis.precede\b/g, 'this._globals.qure.precede');
-						body = body.replace(/\bthis.then\b/g,    'this._globals.qure.then');
-						body = body.replace(/\bthis.resume\b/g,  'this._globals.qure.resume');
-						// run, fork, load, declare, wait
-						//console.log( body );
-
-						// append function body
-						args.push(body);
-						// prepeare recursion
-						recursion[fn] = Function.apply({}, args);
+						if (key.slice(-4) === 'Sync') {
+							syncFunc[key] = x10.parseFunc(key, record[key]);
+						} else {
+							tRecord[key] = record[key];
+						}
 					}
-				};
-			this.queue.push(func);
-			return this;
-		},
-		thread: function(record) {
-			var self = this,
-				func = function() {
-					self._compiled = thread.compile(record, function() {
+					// compile threaded functions
+					x10.compile(tRecord, function() {
+						self.precede(function() {
+							// pause queue execution
+							self.pause();
+						});
 						self.resume.apply(self, arguments);
 					});
 				};
-			this.queue.unshift(func);
+			this.queue.push(func);
 			return this;
 		},
 		run: function() {
 			var self = this,
 				args = [].slice.apply(arguments),
 				fn = function() {
-					var name = (recursion.single_recursive_func) ? 'single_recursive_func' : args.shift();
+					var name = (syncFunc.single_anonymous_func) ? 'single_anonymous_func' : args.shift();
 
-					if (recursion[name]) {
-						recursion._globals.qure = self;
-						recursion._globals.res = recursion[name].apply(recursion, args);
+					if (syncFunc[name]) {
+						// this is a sync call
+						syncFunc._globals.qure = self;
+						syncFunc._globals.res = syncFunc[name].apply(syncFunc, args);
 					} else {
+						// pause queue execution
 						self.pause();
-						self._compiled[name].apply(recursion, args);
+						// call threaded function
+						workFunc[name].apply(workFunc, args);
 					}
 				};
-			//fn._paused = true;
 			this.queue.push(fn);
 			return this;
 		},
