@@ -82,7 +82,7 @@
 	};
 
 	// thread enabler
-	var thread = {
+	var x10 = {
 		init: function() {
 			return this;
 		},
@@ -105,22 +105,24 @@
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
 					func = event.data[0];
-				thread.observer.emit('thread:'+ func, args);
+				x10.observer.emit('thread:'+ func, args);
 			};
 
 			return worker;
 		},
 		call_handler: function(func, worker, callback) {
 			return function() {
-				var args = Array.prototype.slice.call(arguments);
+				var args = [].slice.call(arguments),
+					fn = function(event) {
+						x10.observer.off('thread:'+ func, fn);
+						callback(event.detail[0]);
+					};
 
 				// add method name
 				args.unshift(func);
 
 				// listen for 'done'
-				thread.observer.on('thread:'+ func, function(event) {
-					callback(event.detail[0]);
-				});
+				x10.observer.on('thread:'+ func, fn);
 
 				// start worker
 				worker.postMessage(args);
@@ -300,13 +302,8 @@
 			var self = this,
 				func = function() {
 					var tRecord = {},
-						str,
-						args,
-						body,
 						key,
-						val,
-						prop,
-						fn;
+						prop;
 					if (typeof(record) === 'function') {
 						record = {
 							single_anonymous_func: record
@@ -318,13 +315,17 @@
 							continue;
 						}
 						if (key.slice(-4) === 'Sync') {
-							syncFunc[key] = thread.parseFunc(key, record[key]);
+							syncFunc[key] = x10.parseFunc(key, record[key]);
 						} else {
 							tRecord[key] = record[key];
 						}
 					}
 					// compile threaded functions
-					workFunc = thread.compile(tRecord, function() {
+					workFunc = x10.compile(tRecord, function() {
+						self.precede(function() {
+							// pause queue execution
+							self.pause();
+						});
 						self.resume.apply(self, arguments);
 					});
 				};
@@ -338,15 +339,16 @@
 					var name = (syncFunc.single_anonymous_func) ? 'single_anonymous_func' : args.shift();
 
 					if (syncFunc[name]) {
+						// this is a sync call
 						syncFunc._globals.qure = self;
 						syncFunc._globals.res = syncFunc[name].apply(syncFunc, args);
 					} else {
+						// pause queue execution
 						self.pause();
 						// call threaded function
 						workFunc[name].apply(workFunc, args);
 					}
 				};
-			//fn._paused = true;
 			this.queue.push(fn);
 			return this;
 		},
