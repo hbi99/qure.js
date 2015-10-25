@@ -130,13 +130,11 @@
 		},
 		compile: function(record, callback) {
 			var worker = this.setup(record),
-				obj    = {},
 				fn;
 			// create return object
 			for (fn in record) {
-				obj[fn] = this.call_handler(fn, worker, callback);
+				workFunc[fn] = this.call_handler(fn, worker, callback);
 			}
-			return obj;
 		},
 		parse: function(tree, isArray) {
 			var hash = [],
@@ -321,7 +319,7 @@
 						}
 					}
 					// compile threaded functions
-					workFunc = x10.compile(tRecord, function() {
+					x10.compile(tRecord, function() {
 						self.precede(function() {
 							// pause queue execution
 							self.pause();

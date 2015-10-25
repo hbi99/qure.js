@@ -16,21 +16,20 @@ Qure
 			return (n < 2) ? 1 : self(n-2) + self(n-1);
 		}
 	})
-	.run('fibonacci', 38)
+	.run('fibonacci', 36)
 	.then(function(res) {
-		//Qure.pause();
 		console.log(res);
-		// 21
+		// 24157817
 	})
 	.run('fibonacci', 41)
 	.then(function(res) {
 		console.log(res);
-		// 144
+		// 267914296
 	})
 	.run('fibonacci', 42)
 	.then(function(res) {
 		console.log(res);
-		// 144
+		// 433494437
 	});
 
 </script>
@@ -39,9 +38,9 @@ Qure
 	The spinning gif stops if the syncronized function is used  (fibonacciSync).
 	Gif not stopping is a visual proof that UI thread is not affected
 	when calling true threaded function (fibonacci).
--->
 
 <img src="img/waiting_32.gif" width="100"/>
+-->
 
 </body>
 </html>
