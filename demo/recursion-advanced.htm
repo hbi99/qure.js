@@ -19,6 +19,11 @@ Qure
 		// factorial numbers
 		factorial: function(n) {
 			return (n <= 0) ? 1 : (n * self(n - 1));
+		},
+		// calling sibling function using 'this'
+		foo: function(n) {
+			// return calculating the 21th factorial number
+			return this.factorial(n);
 		}
 	})
 	.run('fibonacci', 36)
@@ -36,10 +41,10 @@ Qure
 		console.log('The 42nd fibonacci number is: '+ res);
 		// 433494437
 	})
-	.run('factorial', 21)
+	.run('foo', 21)
 	.then(function(res) {
-		console.log('Recursively calculating the 21th factorial number: '+ res);
-		// 433494437
+		console.log(res);
+		// 51090942171709440000
 	});
 
 </script>
