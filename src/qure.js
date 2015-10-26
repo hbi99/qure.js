@@ -160,12 +160,11 @@
 					case Array:  val = '['+ this.parse(prop, true).join(',') +']'; break;
 					case String: val = '"'+ prop.replace(/"/g, '\\"') +'"';        break;
 					case RegExp:
-					case Function:
 						val = prop.toString();
-						val = val.replace(/\bself\b/g, 'this.'+ key);
+						val = 'new RegExp("'+ val.slice(1, val.lastIndexOf('/')) +'", "'+ val.slice(val.lastIndexOf('/')+1) +'")';
 						break;
-					default:
-						val = prop;
+					case Function: val = prop.toString().replace(/\bself\b/g, 'this.'+ key); break;
+					default: val = prop;
 				}
 				if (isArray) hash.push(val);
 				else hash.push(key +':'+ val);
@@ -310,6 +309,8 @@
 					for (key in record) {
 						prop = record[key];
 						if (prop.constructor !== Function) {
+							syncFunc[key] =
+							tRecord[key] = record[key];
 							continue;
 						}
 						if (key.slice(-4) === 'Sync') {

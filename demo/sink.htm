@@ -11,16 +11,14 @@
 
 Qure
 	.declare({
-		// fibonacci numbers
-		fibonacciSync: function(n) {
-			return (n < 2) ? 1 : self(n-2) + self(n-1);
-		},
+		// regular expression
+		name: /hakan/gi,
 		// call sibling function
-		barSync: function() {
-			return this.fibonacciSync(7);
+		foobar: function(str) {
+			return str.match(this.name);
 		}
 	})
-	.run('barSync')
+	.run('foobar', 'Hi, my name is hakan bilgin.')
 	.then(function(res) {
 		console.log(res);
 	});
