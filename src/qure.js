@@ -187,7 +187,7 @@
 			body = body.replace(/\bthis.precede\b/g, 'this._globals.qure.precede');
 			body = body.replace(/\bthis.then\b/g,    'this._globals.qure.then');
 			body = body.replace(/\bthis.resume\b/g,  'this._globals.qure.resume');
-			// run, fork, load, declare, wait
+			// run, fork, require, declare, wait
 			//console.log( body );
 
 			// append function body
@@ -277,7 +277,7 @@
 			this.queue.push(func);
 			return this;
 		},
-		load: function(url, hash, key) {
+		require: function(url, hash, key) {
 			var self = this,
 				fn = function() {
 					var cors = new CORSreq(self, url, hash, key);
@@ -285,11 +285,11 @@
 				};
 			if (typeof(url) === 'object') {
 				for (var name in url) {
-					this.load(url[name], url, name);
+					this.require(url[name], url, name);
 				}
 				return this;
 			} else if (!hash) {
-				this.load({_single: url});
+				this.require({_single: url});
 				return this;
 			}
 			fn._paused = true;

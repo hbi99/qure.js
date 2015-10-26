@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>QureJS - Ajax demo</title>
+<title>QureJS - Require demo</title>
 <script type="text/javascript" src="../src/qure.js"></script>
 </head>
 <body>
@@ -11,12 +11,12 @@
 
 Qure
 	.wait(500)
-	.load('./test1.json')
+	.require('./test1.json')
 	.then(function(data) {
 		console.log(data);
 	})
 	.wait(500)
-	.load('./test2.json')
+	.require('./test2.json')
 	.then(function(data) {
 		console.log(data);
 	});
