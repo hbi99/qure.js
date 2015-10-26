@@ -332,9 +332,9 @@
 		},
 		run: function() {
 			var self = this,
-				args = [].slice.apply(arguments),
+				args = [].slice.call(arguments),
 				fn = function() {
-					var name = (workFunc[args[0]]) ? args.shift() : 'single_anonymous_func';
+					var name = (workFunc[args[0]] || syncFunc[args[0]]) ? args.shift() : 'single_anonymous_func';
 
 					if (syncFunc[name]) {
 						// this is a sync call
