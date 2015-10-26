@@ -21,15 +21,36 @@ Qure
 			return (n <= 0) ? 1 : (n * self(n - 1));
 		}
 	})
-	.run('fibonacci', 37)
+	.run('fibonacci', 36)
 	.then(function(res) {
-		console.log(res);  // 21
+		console.log('The 36th fibonacci number is: '+ res);
+		// 24157817
 	})
-;
-
-
+	.run('fibonacci', 41)
+	.then(function(res) {
+		console.log('The 41th fibonacci number is: '+ res);
+		// 267914296
+	})
+	.run('fibonacci', 42)
+	.then(function(res) {
+		console.log('The 42nd fibonacci number is: '+ res);
+		// 433494437
+	})
+	.run('factorial', 21)
+	.then(function(res) {
+		console.log('Recursively calculating the 21th factorial number: '+ res);
+		// 433494437
+	});
 
 </script>
+
+<!--
+	The spinning gif stops if the syncronized function is used  (fibonacciSync).
+	Gif not stopping is a visual proof that UI thread is not affected
+	when calling true threaded function (fibonacci).
+-->
+
+<img src="img/waiting_32.gif" width="100"/>
 
 </body>
 </html>

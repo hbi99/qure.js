@@ -334,7 +334,7 @@
 			var self = this,
 				args = [].slice.apply(arguments),
 				fn = function() {
-					var name = (syncFunc.single_anonymous_func) ? 'single_anonymous_func' : args.shift();
+					var name = (workFunc[args[0]]) ? args.shift() : 'single_anonymous_func';
 
 					if (syncFunc[name]) {
 						// this is a sync call
