@@ -42,10 +42,10 @@ Qure.fork().wait(250).then(function() {
 - [x] Precede queue
 - [x] Play/pause support
 - [x] Node support
-- [x] 'this' in recursive functions
 
 
 ### Changelog
+- [x] `0.2.3` 'this' in recursive functions
 - [x] `0.2.2` First version of thread support
 - [x] `0.2.1` Advanced 'declare' + 'run' method
 - [x] `0.2.0` Published library as NPM module

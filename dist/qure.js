@@ -1,5 +1,5 @@
 /* 
- * QureJS v0.2.2 
+ * QureJS v0.2.3 
  * Tiny library introducing an easy design pattern. 
  * https://github.com/hbi99/QureJS.js 
  * 
@@ -14,12 +14,14 @@
 	var isNode = !!module.id;
 
 	// recursive requirements
-	var recursion = {
+	var syncFunc = {
 			_globals: {
 				require : isNode ? require : false,
 				module  : isNode ? module  : false
 			}
 		};
+
+	var workFunc = {};
 
 	// queuing mechanism
 	function Queue(owner, that) {
@@ -52,7 +54,7 @@
 		}
 	};
 
-	// observer
+	// observer mechanism
 	var observer = function() {
 		var stack = {};
 
@@ -88,7 +90,7 @@
 	};
 
 	// thread enabler
-	var thread = {
+	var x10 = {
 		init: function() {
 			return this;
 		},
@@ -103,7 +105,7 @@
 		setup: function(tree) {
 			var url    = window.URL || window.webkitURL,
 				script = 'var tree = {'+ this.parse(tree).join(',') +'};',
-				blob   = new Blob([script + 'self.addEventListener("message", '+ this.work_handler.toString() +', false);'],
+				blob   = new Blob([script +'self.addEventListener("message", '+ this.work_handler.toString() +', false);'],
 									{type: 'text/javascript'}),
 				worker = new Worker(url.createObjectURL(blob));
 			
@@ -111,78 +113,95 @@
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
 					func = event.data[0];
-				thread.observer.emit('thread:'+ func, args);
+				x10.observer.emit('thread:'+ func, args);
 			};
 
 			return worker;
 		},
 		call_handler: function(func, worker, callback) {
 			return function() {
-				var args = Array.prototype.slice.call(arguments);
+				var args = [].slice.call(arguments),
+					fn = function(event) {
+						x10.observer.off('thread:'+ func, fn);
+						callback(event.detail[0]);
+					};
 
 				// add method name
 				args.unshift(func);
 
 				// listen for 'done'
-				thread.observer.on('thread:'+ func, function(event) {
-					callback(event.detail[0]);
-				});
+				x10.observer.on('thread:'+ func, fn);
 
 				// start worker
 				worker.postMessage(args);
 			};
 		},
-		compile: function(hash, callback) {
-			var isFunc = typeof(hash) === 'function',
-				worker = this.setup(isFunc ? {func: hash} : hash),
-				obj    = {},
+		compile: function(record, callback) {
+			var worker = this.setup(record),
 				fn;
 			// create return object
-			if (isFunc) {
-				obj.func = this.call_handler('func', worker, callback);
-				return obj.func;
-			} else {
-				for (fn in hash) {
-					obj[fn] = this.call_handler(fn, worker, callback);
-				}
-				return obj;
+			for (fn in record) {
+				workFunc[fn] = this.call_handler(fn, worker, callback);
 			}
 		},
 		parse: function(tree, isArray) {
 			var hash = [],
 				key,
 				val,
-				v;
+				prop;
 
 			for (key in tree) {
-				v = tree[key];
+				prop = tree[key];
 				// handle null
-				if (v === null) {
+				if (prop === null) {
 					hash.push(key +':null');
 					continue;
 				}
 				// handle undefined
-				if (v === undefined) {
+				if (prop === undefined) {
 					hash.push(key +':undefined');
 					continue;
 				}
-				switch (v.constructor) {
-					case Date:     val = 'new Date('+ v.valueOf() +')';           break;
-					case Object:   val = '{'+ this.parse(v).join(',') +'}';       break;
-					case Array:    val = '['+ this.parse(v, true).join(',') +']'; break;
-					case String:   val = '"'+ v.replace(/"/g, '\\"') +'"';        break;
+				switch (prop.constructor) {
+					case Date:   val = 'new Date('+ prop.valueOf() +')';           break;
+					case Object: val = '{'+ this.parse(prop).join(',') +'}';       break;
+					case Array:  val = '['+ this.parse(prop, true).join(',') +']'; break;
+					case String: val = '"'+ prop.replace(/"/g, '\\"') +'"';        break;
 					case RegExp:
 					case Function:
-						val = v.toString();
+						val = prop.toString();
 						val = val.replace(/\bself\b/g, 'this.'+ key);
 						break;
 					default:
-						val = v;
+						val = prop;
 				}
 				if (isArray) hash.push(val);
 				else hash.push(key +':'+ val);
 			}
 			return hash;
+		},
+		parseFunc: function(name, func) {
+			var str = func.toString(),
+				args,
+				body;
+			args = str.match(/functio.+?\((.*?)\)/)[1].split(',');
+			body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
+			// modify function body
+			body = body.replace(/\bself\b/g,    'this.'+ name);
+			body = body.replace(/\brequire\b/g, 'this._globals.require');
+			body = body.replace(/\bmodule\b/g,  'this._globals.module');
+			// shortcut to qure functions
+			body = body.replace(/\bthis.pause\b/g,   'this._globals.qure.pause');
+			body = body.replace(/\bthis.precede\b/g, 'this._globals.qure.precede');
+			body = body.replace(/\bthis.then\b/g,    'this._globals.qure.then');
+			body = body.replace(/\bthis.resume\b/g,  'this._globals.qure.resume');
+			// run, fork, require, declare, wait
+			//console.log( body );
+
+			// append function body
+			args.push(body);
+			// return parse function body
+			return Function.apply({}, args);
 		},
 		// simple event emitter
 		observer: observer()
@@ -233,11 +252,6 @@
 		var that = {};
 		this.queue = new Queue(this, that);
 
-		this._globals = {
-				require : isNode ? require : false,
-				module  : isNode ? module  : false
-			};
-
 		return this;
 	}
 	Qure.prototype = {
@@ -260,9 +274,9 @@
 			var self = this,
 				func = function() {
 					var args = [];
-					if (self._globals.res) {
-						args.push(self._globals.res);
-						delete self._globals.res;
+					if (syncFunc._globals.res) {
+						args.push(syncFunc._globals.res);
+						delete syncFunc._globals.res;
 					} else {
 						args = arguments;
 					}
@@ -271,7 +285,7 @@
 			this.queue.push(func);
 			return this;
 		},
-		load: function(url, hash, key) {
+		require: function(url, hash, key) {
 			var self = this,
 				fn = function() {
 					var cors = new CORSreq(self, url, hash, key);
@@ -279,11 +293,11 @@
 				};
 			if (typeof(url) === 'object') {
 				for (var name in url) {
-					this.load(url[name], url, name);
+					this.require(url[name], url, name);
 				}
 				return this;
 			} else if (!hash) {
-				this.load({_single: url});
+				this.require({_single: url});
 				return this;
 			}
 			fn._paused = true;
@@ -293,59 +307,54 @@
 		declare: function(record) {
 			var self = this,
 				func = function() {
-					var str,
-						args,
-						body;
+					var tRecord = {},
+						key,
+						prop;
 					if (typeof(record) === 'function') {
 						record = {
-							single_recursive_func: record
+							single_anonymous_func: record
 						};
 					}
-					for (var fn in record) {
-						if (typeof record[fn] !== 'function') {
-							recursion[fn] = record[fn];
+					for (key in record) {
+						prop = record[key];
+						if (prop.constructor !== Function) {
 							continue;
 						}
-						str  = record[fn].toString();
-						args = str.match(/functio.+?\((.*?)\)/)[1].split(',');
-						body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
-						// modify function body
-						body = body.replace(/\bself\b/g,    'this._fn_'+ fn);
-						body = body.replace(/\brequire\b/g, 'this._globals.require');
-						body = body.replace(/\bmodule\b/g,  'this._globals.module');
-						// append function body
-						args.push(body);
-						// prepeare recursion
-						self['_fn_'+ fn] = Function.apply({}, args);
+						if (key.slice(-4) === 'Sync') {
+							syncFunc[key] = x10.parseFunc(key, record[key]);
+						} else {
+							tRecord[key] = record[key];
+						}
 					}
+					// compile threaded functions
+					x10.compile(tRecord, function() {
+						self.precede(function() {
+							// pause queue execution
+							self.pause();
+						});
+						self.resume.apply(self, arguments);
+					});
 				};
 			this.queue.push(func);
 			return this;
 		},
-		thread: function(record) {
-			var self = this,
-				func = function() {
-					self._compiled = thread.compile(record, function() {
-						self.resume.apply(self, arguments);
-					});
-				};
-			this.queue.unshift(func);
-			return this;
-		},
 		run: function() {
 			var self = this,
-				args = [].slice.apply(arguments),
+				args = [].slice.call(arguments),
 				fn = function() {
-					var name = (self._fn_single_recursive_func) ? 'single_recursive_func' : args.shift();
+					var name = (workFunc[args[0]] || syncFunc[args[0]]) ? args.shift() : 'single_anonymous_func';
 
-					if (self['_fn_'+ name]) {
-						self._globals.res = self['_fn_'+ name].apply(self, args);
+					if (syncFunc[name]) {
+						// this is a sync call
+						syncFunc._globals.qure = self;
+						syncFunc._globals.res = syncFunc[name].apply(syncFunc, args);
 					} else {
+						// pause queue execution
 						self.pause();
-						self._compiled[name].apply(self, args);
+						// call threaded function
+						workFunc[name].apply(workFunc, args);
 					}
 				};
-			//fn._paused = true;
 			this.queue.push(fn);
 			return this;
 		},
