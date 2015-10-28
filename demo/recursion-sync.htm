@@ -17,8 +17,8 @@ Qure
 		},
 		// call sibling function
 		barSync: function() {
-			// return the 7th fibonacci number
-			return this.fibonacciSync(7);
+			// return the 43rd fibonacci number
+			return this.fibonacciSync(43);
 		}
 	})
 	.run('barSync')
@@ -27,6 +27,14 @@ Qure
 	});
 
 </script>
+
+<!--
+	The spinning gif stops if the syncronized function is used  (fibonacciSync).
+	Gif not stopping is a visual proof that UI thread is not affected
+	when calling true threaded function (fibonacci).
+-->
+
+<img src="img/waiting_32.gif" width="100"/>
 
 </body>
 </html>
