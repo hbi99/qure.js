@@ -1,0 +1,28 @@
+{
+  "name": "qure",
+  "version": "0.2.6",
+  "homepage": "https://github.com/hbi99/QureJS.js",
+  "authors": [
+    "Hakan Bilgin <hbi99@hotmail.com>"
+  ],
+  "description": "Search JSON structures plus smart templating with XSLT and XPath.",
+  "main": "./dist/qurejs",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "javascript",
+    "concurrency",
+    "queueing",
+    "recursion",
+    "design pattern"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
