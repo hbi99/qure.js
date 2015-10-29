@@ -1,8 +1,6 @@
 
 'use strict';
 
-
-
 var gulp                       = require('gulp'),
 	runSequence                = require('run-sequence'),
 	conventionalChangelog      = require('conventional-changelog'),
