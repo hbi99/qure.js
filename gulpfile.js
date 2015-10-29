@@ -3,7 +3,7 @@
 
 var gulp                       = require('gulp'),
 	runSequence                = require('run-sequence'),
-	conventionalChangelog      = require('conventional-changelog'),
+	conventionalChangelog      = require('gulp-conventional-changelog'),
 	conventionalGithubReleaser = require('conventional-github-releaser'),
 	bump                       = require('gulp-bump'),
 	gutil                      = require('gulp-util'),

@@ -1,3 +1,10 @@
+<a name="0.2.7"></a>
+## 0.2.7 (2015-10-29)
+
+
+
+
+
 ### Changelog
 - [x] `0.2.4` switching to gulp, from grunt
 - [x] `0.2.3` 'this' in recursive functions
