@@ -1,6 +1,6 @@
 
 /*
- * 
+ *  
  */
 
 var Qure = require('../src/qure.js');
