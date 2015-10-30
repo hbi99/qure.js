@@ -1,11 +1,3 @@
-/* 
- * QureJS v0.2.3 
- * Tiny library introducing an easy design pattern. 
- * https://github.com/hbi99/QureJS.js 
- * 
- * Copyright (c) 2013-2015, Hakan Bilgin <hbi@longscript.com> 
- * Licensed under the  License 
- */ 
 
 (function(window, module) {
 	'use strict';
@@ -331,7 +323,7 @@
 					x10.compile(tRecord, function() {
 						self.precede(function() {
 							// pause queue execution
-							self.pause();
+							self.pause(true);
 						});
 						self.resume.apply(self, arguments);
 					});
@@ -351,7 +343,7 @@
 						syncFunc._globals.res = syncFunc[name].apply(syncFunc, args);
 					} else {
 						// pause queue execution
-						self.pause();
+						self.pause(true);
 						// call threaded function
 						workFunc[name].apply(workFunc, args);
 					}
@@ -368,10 +360,11 @@
 			this.queue.flush.apply(this.queue, arguments);
 			return this;
 		},
-		pause: function(fn) {
-			fn = fn || function() {};
+		pause: function(precede) {
+			var fn = function() {};
 			fn._paused = true;
-			this.queue.unshift(fn);
+			if (precede) this.queue.unshift(fn);
+			else this.queue.push(fn);
 			return this;
 		}
 	};

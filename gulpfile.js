@@ -2,13 +2,26 @@
 'use strict';
 
 var gulp                       = require('gulp'),
+	$                          = require('gulp-load-plugins')(),
 	runSequence                = require('run-sequence'),
 	conventionalChangelog      = require('gulp-conventional-changelog'),
 	conventionalGithubReleaser = require('conventional-github-releaser'),
-	bump                       = require('gulp-bump'),
 	gutil                      = require('gulp-util'),
-	git                        = require('gulp-git'),
 	fs                         = require('fs');
+
+var SRC = 'src/qure.js',
+	DEST = 'dist/'
+
+
+gulp.task('minify', function () {
+	return gulp.src(SRC)
+				.pipe(gulp.dest(DEST))
+				.pipe($.uglify())
+				.pipe($.rename({ extname: '.min.js' }))
+				.pipe(gulp.dest(DEST));
+});
+
+
 
 
 gulp.task('changelog', function () {
@@ -35,27 +48,27 @@ gulp.task('bump-version', function () {
 	// use minimist (https://www.npmjs.com/package/minimist) to determine with a
 	// command argument whether you are doing a 'major', 'minor' or a 'patch' change.
 	return gulp.src(['./bower.json', './package.json'])
-				.pipe(bump({type: "patch"}).on('error', gutil.log))
+				.pipe($.bump({type: "patch"}).on('error', gutil.log))
 				.pipe(gulp.dest('./'));
 });
 
 gulp.task('commit-changes', function () {
 	return gulp.src('.')
-				.pipe(git.add())
-				.pipe(git.commit('[Prerelease] Bumped version number'));
+				.pipe($.git.add())
+				.pipe($.git.commit('[Prerelease] Bumped version number'));
 });
 
 gulp.task('push-changes', function (cb) {
-	git.push('origin', 'master', cb);
+	$.git.push('origin', 'master', cb);
 });
 
 gulp.task('create-new-tag', function (cb) {
 	var version = getPackageJsonVersion();
-	git.tag(version, 'Created Tag for version: '+ version, function (error) {
+	$.git.tag(version, 'Created Tag for version: '+ version, function (error) {
 		if (error) {
 			return cb(error);
 		}
-		git.push('origin', 'master', {args: '--tags'}, cb);
+		$.git.push('origin', 'master', {args: '--tags'}, cb);
 	});
 
 	function getPackageJsonVersion () {
@@ -65,20 +78,20 @@ gulp.task('create-new-tag', function (cb) {
 	};
 });
 
-gulp.task('release', function (callback) {
-	runSequence(
-		'bump-version',
-		'changelog',
-		'commit-changes',
-		'push-changes',
-		'create-new-tag',
-		'github-release',
+gulp.task('commit', function (callback) {
+	runSequence('bump-version', 'changelog', 'commit-changes',
 		function (error) {
-			if (error) {
-				console.log(error.message);
-			} else {
-				console.log('RELEASE FINISHED SUCCESSFULLY');
-			}
+			if (error) console.log(error.message);
+			else console.log('COMMIT FINISHED SUCCESSFULLY');
+			callback(error);
+		});
+});
+
+gulp.task('release', function (callback) {
+	runSequence('minify', 'bump-version', 'changelog', 'commit-changes', 'push-changes', 'create-new-tag', 'github-release',
+		function (error) {
+			if (error) console.log(error.message);
+			else console.log('RELEASE FINISHED SUCCESSFULLY');
 			callback(error);
 		});
 });
