@@ -3,47 +3,73 @@
 
 var gulp                       = require('gulp'),
 	$                          = require('gulp-load-plugins')(),
+	gutil                      = require('gulp-util'),
+	fs                         = require('fs'),
+	stylish                    = require('jshint-stylish'),
 	runSequence                = require('run-sequence'),
 	conventionalChangelog      = require('gulp-conventional-changelog'),
-	conventionalGithubReleaser = require('conventional-github-releaser'),
-	gutil                      = require('gulp-util'),
-	fs                         = require('fs');
-
-var SRC = 'src/qure.js',
-	DEST = 'dist/'
+	conventionalGithubReleaser = require('conventional-github-releaser');
 
 
-gulp.task('minify', function () {
+var DATE  = new Date(),
+	SRC   = 'src/qure.js',
+	DEST  = 'dist/',
+	TESTS = 'tests/*',
+	PKG   = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+
+
+var banner   = ['/*',
+				' * <%= name %>.js [v<%= version %>]',
+				' * <%= homepage %> ',
+				' * Copyright (c) 2013-'+ DATE.getFullYear() +', <%= author.name %> <<%= author.email %>> \n' +
+				' * Licensed under the <%= license %> License',
+				' */',
+				''].join('\n');
+
+
+/* 
+ * this task executes all tests -
+ * unless it is called with argument:
+    gulp tests --file 01
+ */
+gulp.task('tests', function() {
+	var nr = process.argv.slice(2)[2],
+		src = nr ? 'tests/test-'+ nr +'.js' : TESTS;
+	return gulp.src(src, {read: false})
+				.pipe($.mocha({reporter: 'list'}));
+});
+
+
+
+gulp.task('minify', function() {
 	return gulp.src(SRC)
+				.pipe($.jshint())
+				.pipe($.jshint.reporter('jshint-stylish'))
+				.pipe($.header(banner, PKG))
 				.pipe(gulp.dest(DEST))
 				.pipe($.uglify())
+				.pipe($.header(banner, PKG))
 				.pipe($.rename({ extname: '.min.js' }))
 				.pipe(gulp.dest(DEST));
 });
 
 
-
-
-gulp.task('changelog', function () {
-	return gulp.src('CHANGELOG.md', {
-				buffer: false
-			})
-			.pipe(conventionalChangelog({
-				preset: 'angular' // Or to any other commit message convention you use.
-			}))
-			.pipe(gulp.dest('./'));
+gulp.task('changelog', function() {
+	return gulp.src('CHANGELOG.md', {buffer: false})
+				.pipe(conventionalChangelog({preset: 'angular'}))
+				.pipe(gulp.dest('./'));
 });
+
 
 gulp.task('github-release', function(done) {
 	conventionalGithubReleaser({
 		type: "oauth",
-		token: '46e1c77d2e11dd7402f0346923fa53731a1f88a4' // change this to your own GitHub token or use an environment variable
-	}, {
-		preset: 'angular' // Or to any other commit message convention you use.
-	}, done);
+		token: '46e1c77d2e11dd7402f0346923fa53731a1f88a4'
+	}, {preset: 'angular'}, done);
 });
 
-gulp.task('bump-version', function () {
+
+gulp.task('bump-version', function() {
 	// We hardcode the version change type to 'patch' but it may be a good idea to
 	// use minimist (https://www.npmjs.com/package/minimist) to determine with a
 	// command argument whether you are doing a 'major', 'minor' or a 'patch' change.
@@ -52,44 +78,40 @@ gulp.task('bump-version', function () {
 				.pipe(gulp.dest('./'));
 });
 
-gulp.task('commit-changes', function () {
+
+gulp.task('commit-changes', function() {
 	return gulp.src('.')
 				.pipe($.git.add())
-				.pipe($.git.commit('[Prerelease] Bumped version number'));
+				.pipe($.git.commit('['+ PKG.version +'] Bumped version number'));
 });
 
-gulp.task('push-changes', function (cb) {
+
+gulp.task('push-changes', function(cb) {
 	$.git.push('origin', 'master', cb);
 });
 
-gulp.task('create-new-tag', function (cb) {
-	var version = getPackageJsonVersion();
-	$.git.tag(version, 'Created Tag for version: '+ version, function (error) {
-		if (error) {
-			return cb(error);
-		}
+
+gulp.task('create-new-tag', function(cb) {
+	$.git.tag(PKG.version, 'Created Tag for version: '+ PKG.version, function(error) {
+		if (error) return cb(error);
 		$.git.push('origin', 'master', {args: '--tags'}, cb);
 	});
-
-	function getPackageJsonVersion () {
-		// We parse the json file instead of using require because require caches
-		// multiple calls so the version number won't be updated
-		return JSON.parse(fs.readFileSync('./package.json', 'utf8')).version;
-	};
 });
 
-gulp.task('commit', function (callback) {
-	runSequence('bump-version', 'changelog', 'commit-changes',
-		function (error) {
+
+gulp.task('commit', function(callback) {
+	runSequence('minify', 'bump-version', 'changelog', 'commit-changes',
+		function(error) {
 			if (error) console.log(error.message);
 			else console.log('COMMIT FINISHED SUCCESSFULLY');
 			callback(error);
 		});
 });
 
-gulp.task('release', function (callback) {
+
+gulp.task('release', function(callback) {
 	runSequence('minify', 'bump-version', 'changelog', 'commit-changes', 'push-changes', 'create-new-tag', 'github-release',
-		function (error) {
+		function(error) {
 			if (error) console.log(error.message);
 			else console.log('RELEASE FINISHED SUCCESSFULLY');
 			callback(error);

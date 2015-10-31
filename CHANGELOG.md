@@ -1,3 +1,19 @@
+<a name="0.2.10"></a>
+## [0.2.10](https://github.com/hbi99/QureJS.js/compare/0.2.9...v0.2.10) (2015-10-31)
+
+
+
+
+
+* removing traces of grunt
+* test runner can target individual tests with argument
+* test runner as gulp-task
+* added gulp-ified banner
+* threaded recursion (web worker) in browser
+* precede function
+* pause / resume functions
+
+
 <a name="0.2.9"></a>
 ## [0.2.9](https://github.com/hbi99/QureJS.js/compare/0.2.8...v0.2.9) (2015-10-30)
 

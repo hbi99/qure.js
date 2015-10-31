@@ -1,3 +1,9 @@
+/*
+ * qure.js [v0.2.9]
+ * https://github.com/hbi99/QureJS.js 
+ * Copyright (c) 2013-2015, Hakan Bilgin <hbi@longscript.com> 
+ * Licensed under the MIT License
+ */
 
 (function(window, module) {
 	'use strict';
