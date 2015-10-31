@@ -92,7 +92,8 @@ gulp.task('push-changes', function(cb) {
 
 
 gulp.task('create-new-tag', function(cb) {
-	$.git.tag(PKG.version, 'Created Tag for version: '+ PKG.version, function(error) {
+	var version = JSON.parse(fs.readFileSync('./package.json', 'utf8')).version;
+	$.git.tag(version, 'Created Tag for version: '+ version, function(error) {
 		if (error) return cb(error);
 		$.git.push('origin', 'master', {args: '--tags'}, cb);
 	});

@@ -1,3 +1,9 @@
+<a name="0.2.11"></a>
+## [0.2.11](https://github.com/hbi99/QureJS.js/compare/0.2.9...v0.2.11) (2015-10-31)
+
+
+
+
 <a name="0.2.10"></a>
 ## [0.2.10](https://github.com/hbi99/QureJS.js/compare/0.2.9...v0.2.10) (2015-10-31)
 
