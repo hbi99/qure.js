@@ -1,15 +1,12 @@
 <a name="0.2.11"></a>
 ## [0.2.11](https://github.com/hbi99/QureJS.js/compare/0.2.9...v0.2.11) (2015-10-31)
 
+* bugfix of gulp-task 'create-new-tag'
 
 
 
 <a name="0.2.10"></a>
 ## [0.2.10](https://github.com/hbi99/QureJS.js/compare/0.2.9...v0.2.10) (2015-10-31)
-
-
-
-
 
 * removing traces of grunt
 * test runner can target individual tests with argument
@@ -18,6 +15,7 @@
 * threaded recursion (web worker) in browser
 * precede function
 * pause / resume functions
+
 
 
 <a name="0.2.9"></a>
