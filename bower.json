@@ -1,12 +1,12 @@
 {
   "name": "qure",
   "version": "0.2.14",
-  "homepage": "https://github.com/hbi99/QureJS.js",
+  "homepage": "https://github.com/hbi99/QureJS",
   "authors": [
     "Hakan Bilgin <hbi99@hotmail.com>"
   ],
   "description": "Search JSON structures plus smart templating with XSLT and XPath.",
-  "main": "./dist/qurejs",
+  "main": "./dist/qure.min.js",
   "moduleType": [
     "globals"
   ],

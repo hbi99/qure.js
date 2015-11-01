@@ -4,6 +4,7 @@
 var gulp                       = require('gulp'),
 	$                          = require('gulp-load-plugins')(),
 	gutil                      = require('gulp-util'),
+	colors                     = require('colors'),
 	fs                         = require('fs'),
 	stylish                    = require('jshint-stylish'),
 	runSequence                = require('run-sequence'),
@@ -25,6 +26,16 @@ var banner   = ['/*',
 				' * Licensed under the <%= license %> License',
 				' */',
 				''].join('\n');
+
+
+// help instructions
+gulp.task('help', function() {
+	console.log('  gulp tests'.cyan + '\t\tRun all tests'.grey);
+	console.log('  gulp tests --file 01'.cyan + '\tRun specific file'.grey);
+	console.log('  gulp minify'.cyan + '\t\tMinify and JSHint files'.grey);
+	console.log('  gulp commit'.cyan + '\t\tCommit and bump version'.grey);
+	console.log('  gulp release'.cyan + '\t\tCommit, bump, push and release version'.grey);
+});
 
 
 /* 
