@@ -35,6 +35,8 @@ Qure.fork().wait(250).then(function() {
 - [ ] Load-method in Node environment
 - [ ] Metaphorical support for Confirm & Prompt ?
 - [ ] Wait for 'Qure' instance
+- [ ] Save sequence for replay ?
+- [ ] build-in support for rest-API ?
 
 
 ### Testing
