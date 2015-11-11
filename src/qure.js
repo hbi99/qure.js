@@ -83,24 +83,43 @@
 
 	// thread enabler
 	var x10 = {
-		init: function() {
-			return this;
-		},
-		work_handler: function(event) {
-			var args = Array.prototype.slice.call(event.data, 1),
-				func = event.data[0],
-				ret  = tree[func].apply(tree, args);
-
-			// return process finish
-			postMessage([func, ret]);
-		},
 		setup: function(tree) {
 			var url    = window.URL || window.webkitURL,
 				script = 'var tree = {'+ this.parse(tree).join(',') +'};',
-				blob   = new Blob([script +'self.addEventListener("message", '+ this.work_handler.toString() +', false);'],
-									{type: 'text/javascript'}),
-				worker = new Worker(url.createObjectURL(blob));
+				blob,
+				worker,
+				work_handler;
 			
+			if (isNode) {
+				// worker com handler
+				work_handler = function(e) {
+					var data = JSON.parse(e).data,
+						func = data.shift(),
+						res  = tree[func].apply(tree, data);
+					// return process finish
+					process.send(JSON.stringify([func, res]));
+				};
+				// create the worker
+				worker = worker = new NodeWorker();
+				// prepare script for the worker
+				script = script +'process.on("message", '+ work_handler.toString() +');';
+				// send function record to worker
+				worker.postMessage(script);
+			} else {
+				// worker com handler
+				work_handler = function(event) {
+					var args = Array.prototype.slice.call(event.data, 1),
+						func = event.data[0],
+						ret  = tree[func].apply(tree, args);
+					// send back results
+					postMessage([func, ret]);
+				};
+				// script blob for the worker
+				blob = new Blob([script +'self.addEventListener("message", '+ work_handler.toString() +', false);'], {type: 'text/javascript'});
+				// create the worker
+				worker = new Worker(url.createObjectURL(blob));
+			}
+
 			// thread pipe
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
@@ -243,6 +262,8 @@
 		var that = {};
 		this.queue = new Queue(this, that);
 
+		this.x10 = x10;
+
 		return this;
 	}
 	Qure.prototype = {
@@ -368,6 +389,44 @@
 			return this;
 		}
 	};
+
+	if (isNode) {
+		// worker class
+		var NodeWorker = function() {
+			var that = this,
+				ps   = require('child_process');
+			// fork child process
+			this.process = ps.fork(__dirname +'/eval');
+
+			// prepare out-bound com
+			this.process.on('message', function (msg) {
+				that.terminate();
+				
+				//console.log( msg );
+				if (that.onmessage) {
+					that.onmessage({ data: JSON.parse(msg) });
+				}
+			});
+			
+			// error handler (todo)
+			this.process.on('error', function (err) {
+				if (that.onerror) {
+					that.onerror(err);
+				}
+			});
+		}
+
+		NodeWorker.prototype = {
+			onmessage: null,
+			onerror: null,
+			postMessage: function (obj) {
+				this.process.send(JSON.stringify({ data: obj }));
+			},
+			terminate: function () {
+				this.process.kill();
+			}
+		};
+	}
 
 	// Export
 	window.Qure = module.exports = new Qure();

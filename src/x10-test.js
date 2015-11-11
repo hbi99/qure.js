@@ -8,8 +8,6 @@ var task = x10.compile({
 		}
 	});
 
-//task.postMessage( 'fn(3)' );
-
 task.loop(100, function(res) {
 	console.log( res );
 });
