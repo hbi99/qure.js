@@ -1,3 +1,9 @@
+<a name="0.2.12"></a>
+## [0.2.12](https://github.com/hbi99/QureJS.js/compare/0.2.11...v0.2.12) (2015-11-15)
+
+
+
+
 * qure.js node:ifed
 
 

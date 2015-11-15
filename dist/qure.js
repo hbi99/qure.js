@@ -1,5 +1,5 @@
 /*
- * qure.js [v0.2.10]
+ * qure.js [v0.2.11]
  * https://github.com/hbi99/QureJS.js 
  * Copyright (c) 2013-2015, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
@@ -52,95 +52,80 @@
 		}
 	};
 
-	// observer mechanism
-	var observer = function() {
-		var stack = {};
-
-		return {
-			on: function(type, fn) {
-				if (!stack[type]) {
-					stack[type] = [];
-				}
-				stack[type].unshift(fn);
-			},
-			off: function(type, fn) {
-				if (!stack[type]) return;
-				var i = stack[type].indexOf(fn);
-				stack[type].splice(i,1);
-			},
-			emit: function(type, detail) {
-				if (!stack[type]) return;
-				var event = {
-						type         : type,
-						detail       : detail,
-						isCanceled   : false,
-						cancelBubble : function() {
-							this.isCanceled = true;
-						}
-					},
-					len = stack[type].length;
-				while(len--) {
-					if (event.isCanceled) return;
-					stack[type][len](event);
-				}
-			}
-		};
-	};
-
 	// thread enabler
 	var x10 = {
-		init: function() {
-			return this;
-		},
-		work_handler: function(event) {
-			var args = Array.prototype.slice.call(event.data, 1),
-				func = event.data[0],
-				ret  = tree[func].apply(tree, args);
-
-			// return process finish
-			postMessage([func, ret]);
-		},
 		setup: function(tree) {
 			var url    = window.URL || window.webkitURL,
 				script = 'var tree = {'+ this.parse(tree).join(',') +'};',
-				blob   = new Blob([script +'self.addEventListener("message", '+ this.work_handler.toString() +', false);'],
-									{type: 'text/javascript'}),
-				worker = new Worker(url.createObjectURL(blob));
+				blob,
+				worker,
+				work_handler;
 			
+			if (isNode) {
+				// worker com handler
+				work_handler = function(event) {
+					var data = JSON.parse(event).data,
+						func = data.shift(),
+						res  = tree[func].apply(tree, data);
+					// return process finish
+					process.send(JSON.stringify([func, res]));
+				};
+				// create the worker
+				worker = worker = new NodeWorker();
+				// prepare script for the worker
+				script = script +'process.on("message", '+ work_handler.toString() +');';
+				// send function record to worker
+				worker.postMessage(script);
+			} else {
+				// worker com handler
+				work_handler = function(event) {
+					var args = Array.prototype.slice.call(event.data, 1),
+						func = event.data[0],
+						ret  = tree[func].apply(tree, args);
+					// send back results
+					postMessage([func, ret]);
+				};
+				// script blob for the worker
+				blob = new Blob([script +'self.addEventListener("message", '+ work_handler.toString() +', false);'], {type: 'text/javascript'});
+				// create the worker
+				worker = new Worker(url.createObjectURL(blob));
+			}
+
 			// thread pipe
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
 					func = event.data[0];
-				x10.observer.emit('thread:'+ func, args);
+				this.qure.resume.apply(this.qure, args);
 			};
 
 			return worker;
 		},
-		call_handler: function(func, worker, callback) {
+		call_handler: function(func, worker, qure) {
 			return function() {
-				var args = [].slice.call(arguments),
-					fn = function(event) {
-						x10.observer.off('thread:'+ func, fn);
-						callback(event.detail[0]);
-					};
+				var args = Array.prototype.slice.call(arguments);
 
 				// add method name
 				args.unshift(func);
 
-				// listen for 'done'
-				x10.observer.on('thread:'+ func, fn);
+				// pause qure instance
+				qure.pause(true);
+
+				// remeber qure instance
+				worker.qure = qure;
 
 				// start worker
 				worker.postMessage(args);
 			};
 		},
-		compile: function(record, callback) {
+		compile: function(record, qure) {
 			var worker = this.setup(record),
 				fn;
 			// create return object
 			for (fn in record) {
-				workFunc[fn] = this.call_handler(fn, worker, callback);
+				workFunc[fn] = this.call_handler(fn, worker, qure);
 			}
+			// save reference
+			workFunc._worker = worker;
 		},
 		parse: function(tree, isArray) {
 			var hash = [],
@@ -199,9 +184,7 @@
 			args.push(body);
 			// return parse function body
 			return Function.apply({}, args);
-		},
-		// simple event emitter
-		observer: observer()
+		}
 	};
 
 	// cors request
@@ -278,6 +261,10 @@
 						args = arguments;
 					}
 					fn.apply(self.queue._that, args);
+					// kill child process, if queue is done and cp exists
+					if (!self.queue._methods.length) {
+						workFunc._worker.process.kill();
+					}
 				};
 			this.queue.push(func);
 			return this;
@@ -326,20 +313,14 @@
 						}
 					}
 					// compile threaded functions
-					x10.compile(tRecord, function() {
-						self.precede(function() {
-							// pause queue execution
-							self.pause(true);
-						});
-						self.resume.apply(self, arguments);
-					});
+					x10.compile(tRecord, self);
 				};
 			this.queue.push(func);
 			return this;
 		},
 		run: function() {
 			var self = this,
-				args = [].slice.call(arguments),
+				args = Array.prototype.slice.call(arguments),
 				fn = function() {
 					var name = (workFunc[args[0]] || syncFunc[args[0]]) ? args.shift() : 'single_anonymous_func';
 
@@ -374,6 +355,44 @@
 			return this;
 		}
 	};
+
+
+	if (isNode) {
+		// worker class for node environment
+		var NodeWorker = function() {
+			var that = this,
+				ps   = require('child_process');
+			// fork child process
+			this.process = ps.fork(__dirname +'/eval');
+
+			// prepare out-bound com
+			this.process.on('message', function (msg) {
+				that.terminate();
+
+				if (that.onmessage) {
+					that.onmessage({ data: JSON.parse(msg) });
+				}
+			});
+			
+			// error handler (todo)
+			this.process.on('error', function (err) {
+				if (that.onerror) {
+					that.onerror(err);
+				}
+			});
+		}
+
+		NodeWorker.prototype = {
+			onmessage: null,
+			onerror: null,
+			postMessage: function (obj) {
+				this.process.send(JSON.stringify({ data: obj }));
+			},
+			terminate: function () {
+				//this.process.kill();
+			}
+		};
+	}
 
 	// Export
 	window.Qure = module.exports = new Qure();
