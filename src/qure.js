@@ -374,7 +374,7 @@
 					that.onerror(err);
 				}
 			});
-		}
+		};
 
 		NodeWorker.prototype = {
 			onmessage: null,
