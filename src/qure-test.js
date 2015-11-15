@@ -15,4 +15,9 @@ Qure
 	.run('fibonacci', 7)
 	.then(function(res) {
 		console.log(res);
-	});
+	})
+	.run('factorial', 7)
+	.then(function(res) {
+		console.log(res);
+	})
+	;

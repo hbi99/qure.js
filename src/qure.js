@@ -46,41 +46,6 @@
 		}
 	};
 
-	// observer mechanism
-	var observer = function() {
-		var stack = {};
-
-		return {
-			on: function(type, fn) {
-				if (!stack[type]) {
-					stack[type] = [];
-				}
-				stack[type].unshift(fn);
-			},
-			off: function(type, fn) {
-				if (!stack[type]) return;
-				var i = stack[type].indexOf(fn);
-				stack[type].splice(i,1);
-			},
-			emit: function(type, detail) {
-				if (!stack[type]) return;
-				var event = {
-						type         : type,
-						detail       : detail,
-						isCanceled   : false,
-						cancelBubble : function() {
-							this.isCanceled = true;
-						}
-					},
-					len = stack[type].length;
-				while(len--) {
-					if (event.isCanceled) return;
-					stack[type][len](event);
-				}
-			}
-		};
-	};
-
 	// thread enabler
 	var x10 = {
 		setup: function(tree) {
@@ -92,8 +57,8 @@
 			
 			if (isNode) {
 				// worker com handler
-				work_handler = function(e) {
-					var data = JSON.parse(e).data,
+				work_handler = function(event) {
+					var data = JSON.parse(event).data,
 						func = data.shift(),
 						res  = tree[func].apply(tree, data);
 					// return process finish
@@ -124,36 +89,37 @@
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
 					func = event.data[0];
-				x10.observer.emit('thread:'+ func, args);
+				this.qure.resume.apply(this.qure, args);
 			};
 
 			return worker;
 		},
-		call_handler: function(func, worker, callback) {
+		call_handler: function(func, worker, qure) {
 			return function() {
-				var args = [].slice.call(arguments),
-					fn = function(event) {
-						x10.observer.off('thread:'+ func, fn);
-						callback(event.detail[0]);
-					};
+				var args = Array.prototype.slice.call(arguments);
 
 				// add method name
 				args.unshift(func);
 
-				// listen for 'done'
-				x10.observer.on('thread:'+ func, fn);
+				// pause qure instance
+				qure.pause(true);
+
+				// remeber qure instance
+				worker.qure = qure;
 
 				// start worker
 				worker.postMessage(args);
 			};
 		},
-		compile: function(record, callback) {
+		compile: function(record, qure) {
 			var worker = this.setup(record),
 				fn;
 			// create return object
 			for (fn in record) {
-				workFunc[fn] = this.call_handler(fn, worker, callback);
+				workFunc[fn] = this.call_handler(fn, worker, qure);
 			}
+			// save reference
+			workFunc._worker = worker;
 		},
 		parse: function(tree, isArray) {
 			var hash = [],
@@ -212,9 +178,7 @@
 			args.push(body);
 			// return parse function body
 			return Function.apply({}, args);
-		},
-		// simple event emitter
-		observer: observer()
+		}
 	};
 
 	// cors request
@@ -262,8 +226,6 @@
 		var that = {};
 		this.queue = new Queue(this, that);
 
-		this.x10 = x10;
-
 		return this;
 	}
 	Qure.prototype = {
@@ -293,6 +255,10 @@
 						args = arguments;
 					}
 					fn.apply(self.queue._that, args);
+					// kill child process, if queue is done and cp exists
+					if (!self.queue._methods.length) {
+						workFunc._worker.process.kill();
+					}
 				};
 			this.queue.push(func);
 			return this;
@@ -341,20 +307,14 @@
 						}
 					}
 					// compile threaded functions
-					x10.compile(tRecord, function() {
-						self.precede(function() {
-							// pause queue execution
-							self.pause(true);
-						});
-						self.resume.apply(self, arguments);
-					});
+					x10.compile(tRecord, self);
 				};
 			this.queue.push(func);
 			return this;
 		},
 		run: function() {
 			var self = this,
-				args = [].slice.call(arguments),
+				args = Array.prototype.slice.call(arguments),
 				fn = function() {
 					var name = (workFunc[args[0]] || syncFunc[args[0]]) ? args.shift() : 'single_anonymous_func';
 
@@ -390,8 +350,9 @@
 		}
 	};
 
+
 	if (isNode) {
-		// worker class
+		// worker class for node environment
 		var NodeWorker = function() {
 			var that = this,
 				ps   = require('child_process');
@@ -401,8 +362,7 @@
 			// prepare out-bound com
 			this.process.on('message', function (msg) {
 				that.terminate();
-				
-				//console.log( msg );
+
 				if (that.onmessage) {
 					that.onmessage({ data: JSON.parse(msg) });
 				}
@@ -423,7 +383,7 @@
 				this.process.send(JSON.stringify({ data: obj }));
 			},
 			terminate: function () {
-				this.process.kill();
+				//this.process.kill();
 			}
 		};
 	}

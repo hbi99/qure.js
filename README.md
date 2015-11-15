@@ -40,6 +40,7 @@ Qure.fork().wait(250).then(function() {
 
 
 ### Testing
+- [x] Child process spawning and killing
 - [x] Threaded recursion (web worker)
 - [x] Precede queue
 - [x] Play/pause support
