@@ -25,7 +25,6 @@ describe('Testing recursion', function() {
 			})
 			.run('factorial', 6)
 			.then(function(res) {
-				console.log(res);
 				// verify the result
 				if (res !== 720) {
 					console.log( '\tUnexpected value!' );
@@ -33,7 +32,6 @@ describe('Testing recursion', function() {
 			})
 			.run('fibonacci', 7)
 			.then(function(res) {
-				console.log(res);
 				// verify the result
 				if (res !== 21) {
 					console.log( '\tUnexpected value!' );

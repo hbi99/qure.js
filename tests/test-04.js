@@ -30,7 +30,7 @@ describe('Testing database', function() {
 					this.pause();
 
 					// open database connection
-					this._fn_open();
+					this.open();
 
 					// execute query
 					this.conn.query(query, function(err, rows, fields) {

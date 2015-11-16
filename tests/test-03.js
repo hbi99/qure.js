@@ -28,7 +28,7 @@ describe('Testing recursion', function() {
 					this.pause();
 					
 					// make async call
-					this._fn_walk(path, function(err, list) {
+					this.walk(path, function(err, list) {
 						// resume queue
 						that.resume(list);
 					});
@@ -51,7 +51,7 @@ describe('Testing recursion', function() {
 										if (!--pending) callback(null, results);
 										return;
 									}
-									that._fn_walk(file, function(err, res) {
+									that.walk(file, function(err, res) {
 										results = results.concat(res);
 										if (!--pending) callback(null, results);
 									});
@@ -64,9 +64,11 @@ describe('Testing recursion', function() {
 					});
 				}
 			})
-			.run('readdir', __dirname +'/../../qurejs.com')
+			.run('readdir', __dirname +'/../demo')
 			.then(function(res) {
+				// print out directory listing
 				console.log(res);
+				// send 'finished' signal to unit-tester
 				done();
 			});
 		

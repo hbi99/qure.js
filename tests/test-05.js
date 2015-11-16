@@ -1,33 +1,41 @@
 
 /*
- * 
+ *  
  */
 
 var Qure = require('../src/qure.js');
 
-describe('Testing thread support', function() {
+describe('Testing threaded recursion', function() {
 
 	/* 
-	 * 
+	 * Simple testing of recursion with fibonacci numbers
 	 */
-	it('with query', function(done) {
+	it('with fibonacci numbers', function(done) {
 		
 		Qure
-			.thread({
+			.declare({
 				// fibonacci numbers
-				fibonacci: function(n) {
-					return (n < 2) ? 1 : self(n-2) + self(n-1);
+				WRK_fibonacci: function(n) {
+					return (n < 2) ? 1 : this.WRK_fibonacci(n-2) + this.WRK_fibonacci(n-1);
 				},
-				loop: function(len) {
-					while (len--) {}
-					return 2;
+				// factorial numbers
+				WRK_factorial: function(n) {
+					return (n <= 0) ? 1 : (n * this.WRK_factorial(n - 1));
 				}
 			})
-			//.run('loop', 1000000)
-			.run('fibonacci', 37)
+			.run('WRK_factorial', 6)
 			.then(function(res) {
-				console.log(res);
-				// 39088169
+				// verify the result
+				if (res !== 720) {
+					console.log( '\tUnexpected value!' );
+				}
+			})
+			.run('WRK_fibonacci', 7)
+			.then(function(res) {
+				// verify the result
+				if (res !== 21) {
+					console.log( '\tUnexpected value!' );
+				}
 				done();
 			});
 		
