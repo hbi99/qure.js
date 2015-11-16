@@ -12,16 +12,16 @@
 Qure
 	.declare({
 		// fibonacci numbers
-		fibonacciSync: function(n) {
+		fibonacci: function(n) {
 			return (n < 2) ? 1 : self(n-2) + self(n-1);
 		},
 		// call sibling function
-		barSync: function() {
+		bar: function() {
 			// return the 43rd fibonacci number
-			return this.fibonacciSync(43);
+			return this.fibonacci(43);
 		}
 	})
-	.run('barSync')
+	.run('bar')
 	.then(function(res) {
 		console.log(res);
 	});
@@ -29,7 +29,7 @@ Qure
 </script>
 
 <!--
-	The spinning gif stops if the syncronized function is used  (fibonacciSync).
+	The spinning gif stops if the syncronized function is used  (fibonacci).
 	Gif not stopping is a visual proof that UI thread is not affected
 	when calling true threaded function (fibonacci).
 -->

@@ -13,15 +13,19 @@
 Qure
 	.declare({
 		// fibonacci numbers
-		fibonacci: function(n) {
+		WRK_fibonacci: function(n) {
 			return (n < 2) ? 1 : self(n-2) + self(n-1);
 		},
 		loop: function(len) {
 			while (len--) {}
+			return len;
 		}
 	})
 	.run('loop', 1000000000)
-	.run('fibonacci', 7)
+	.then(function(res) {
+		console.log('Loop done!', res);
+	})
+	.run('WRK_fibonacci', 17)
 	.then(function(res) {
 		console.log(res);
 		// 39088169
