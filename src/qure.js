@@ -256,7 +256,7 @@
 					}
 					fn.apply(self.queue._that, args);
 					// kill child process, if queue is done and cp exists
-					if (!self.queue._methods.length) {
+					if (!self.queue._methods.length && workFunc._worker.process) {
 						workFunc._worker.process.kill();
 					}
 				};
