@@ -1,5 +1,5 @@
 /*
- * qure.js [v0.2.11]
+ * qure.js [v0.2.12]
  * https://github.com/hbi99/QureJS.js 
  * Copyright (c) 2013-2015, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
@@ -173,10 +173,10 @@
 			body = body.replace(/\brequire\b/g, 'this._globals.require');
 			body = body.replace(/\bmodule\b/g,  'this._globals.module');
 			// shortcut to qure functions
-			body = body.replace(/\bthis.pause\b/g,   'this._globals.qure.pause');
-			body = body.replace(/\bthis.precede\b/g, 'this._globals.qure.precede');
-			body = body.replace(/\bthis.then\b/g,    'this._globals.qure.then');
-			body = body.replace(/\bthis.resume\b/g,  'this._globals.qure.resume');
+			body = body.replace(/\.pause\(/g,   '._globals.qure.pause(');
+			body = body.replace(/\.precede\(/g, '._globals.qure.precede(');
+			body = body.replace(/\.then\(/g,    '._globals.qure.then(');
+			body = body.replace(/\.resume\(/g,  '._globals.qure.resume(');
 			// run, fork, require, declare, wait
 			//console.log( body );
 
@@ -262,7 +262,7 @@
 					}
 					fn.apply(self.queue._that, args);
 					// kill child process, if queue is done and cp exists
-					if (!self.queue._methods.length) {
+					if (!self.queue._methods.length && workFunc._worker && workFunc._worker.process) {
 						workFunc._worker.process.kill();
 					}
 				};
@@ -306,10 +306,10 @@
 							tRecord[key] = record[key];
 							continue;
 						}
-						if (key.slice(-4) === 'Sync') {
-							syncFunc[key] = x10.parseFunc(key, record[key]);
-						} else {
+						if (key.slice(0,4) === 'WRK_') {
 							tRecord[key] = record[key];
+						} else {
+							syncFunc[key] = x10.parseFunc(key, record[key]);
 						}
 					}
 					// compile threaded functions
@@ -380,7 +380,7 @@
 					that.onerror(err);
 				}
 			});
-		}
+		};
 
 		NodeWorker.prototype = {
 			onmessage: null,
