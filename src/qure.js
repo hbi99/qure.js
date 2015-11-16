@@ -256,7 +256,7 @@
 					}
 					fn.apply(self.queue._that, args);
 					// kill child process, if queue is done and cp exists
-					if (!self.queue._methods.length && workFunc._worker.process) {
+					if (!self.queue._methods.length && workFunc._worker && workFunc._worker.process) {
 						workFunc._worker.process.kill();
 					}
 				};
@@ -300,7 +300,7 @@
 							tRecord[key] = record[key];
 							continue;
 						}
-						if (key.slice(4) === 'WRK_') {
+						if (key.slice(0,4) === 'WRK_') {
 							tRecord[key] = record[key];
 						} else {
 							syncFunc[key] = x10.parseFunc(key, record[key]);

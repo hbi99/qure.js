@@ -11,10 +11,12 @@
 
 // fibonacci numbers
 Qure
-	.declare(function(n) {
-		return (n < 2) ? 1 : self(n-2) + self(n-1);
+	.declare({
+		WRK_fibonacci: function(n) {
+			return (n < 2) ? 1 : self(n-2) + self(n-1);
+		}
 	})
-	.run(43)
+	.run('WRK_fibonacci', 43)
 	.then(function(res) {
 		console.log('The 43rd fibonacci number is: '+ res);
 	})
