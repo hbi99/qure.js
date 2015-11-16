@@ -1,3 +1,4 @@
+* handling non-node environment kill signal
 * adjusting tests to the new API
 * handling differences between node/broser worker
 * cleaning up repo
