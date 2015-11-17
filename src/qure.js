@@ -89,7 +89,11 @@
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
 					func = event.data[0];
-				this.qure.resume.apply(this.qure, args);
+				if (['pause', 'resume'].indexOf(func) > -1) {
+					this.qure[func].apply(this.qure, args);
+				} else {
+					this.qure.resume.apply(this.qure, args);
+				}
 			};
 
 			return worker;
@@ -153,6 +157,11 @@
 				}
 				if (isArray) hash.push(val);
 				else hash.push(key +':'+ val);
+			}
+			if (isNode) {
+				hash.push("pause:"+ "function() { process.send(JSON.stringify(['pause'].concat(Array.prototype.slice.call(arguments)))); }");
+				hash.push("resume:"+ "function() { process.send(JSON.stringify(['resume'].concat(Array.prototype.slice.call(arguments)))); }");
+				// TODO: precede, then
 			}
 			return hash;
 		},

@@ -24,16 +24,14 @@ describe('Testing recursion', function() {
 					// normalize path
 					path = this.path.normalize(path);
 
-					console.log(this);
-
-				//	// pause the queue
-				//	this.pause();
-				//	
-				//	// make async call
-				//	this.walkWorker(path, function(err, list) {
-				//		// resume queue
-				//		that.resume(list);
-				//	});
+					// pause the queue
+					this.pause(true);
+					
+					// make async call
+					this.walkWorker(path, function(err, list) {
+						// resume queue
+						that.resume(list);
+					});
 				},
 				walkWorker: function(path, callback, level) {
 					var that = this,

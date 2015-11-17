@@ -1,8 +1,8 @@
+* renaming from "WRK_*" to "*Worker"
+
+
 <a name="0.2.13"></a>
 ## [0.2.13](https://github.com/hbi99/QureJS.js/compare/0.2.12...v0.2.13) (2015-11-16)
-
-
-
 
 * demo files for browser environment adjusted
 * handling non-node environment kill signal
