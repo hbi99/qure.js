@@ -1,3 +1,4 @@
+* added pause resume to node thread worker
 * renaming from "WRK_*" to "*Worker"
 
 
