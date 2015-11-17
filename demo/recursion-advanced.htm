@@ -13,35 +13,35 @@
 Qure
 	.declare({
 		// fibonacci numbers
-		WRK_fibonacci: function(n) {
+		fibonacciWorker: function(n) {
 			return (n < 2) ? 1 : self(n-2) + self(n-1);
 		},
 		// factorial numbers
-		WRK_factorial: function(n) {
+		factorialWorker: function(n) {
 			return (n <= 0) ? 1 : (n * self(n - 1));
 		},
 		// calling sibling function using 'this'
-		WRK_foo: function(n) {
+		fooWorker: function(n) {
 			// return calculating the 21th factorial number
-			return this.WRK_factorial(n);
+			return this.factorialWorker(n);
 		}
 	})
-	.run('WRK_fibonacci', 36)
+	.run('fibonacciWorker', 36)
 	.then(function(res) {
 		console.log('The 36th fibonacci number is: '+ res);
 		// 24157817
 	})
-	.run('WRK_fibonacci', 41)
+	.run('fibonacciWorker', 41)
 	.then(function(res) {
 		console.log('The 41th fibonacci number is: '+ res);
 		// 267914296
 	})
-	.run('WRK_fibonacci', 42)
+	.run('fibonacciWorker', 42)
 	.then(function(res) {
 		console.log('The 42nd fibonacci number is: '+ res);
 		// 433494437
 	})
-	.run('WRK_foo', 21)
+	.run('fooWorker', 21)
 	.then(function(res) {
 		console.log(res);
 		// 51090942171709440000

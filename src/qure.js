@@ -300,7 +300,7 @@
 							tRecord[key] = record[key];
 							continue;
 						}
-						if (key.slice(0,4) === 'WRK_') {
+						if (key.slice(-6) === 'Worker') {
 							tRecord[key] = record[key];
 						} else {
 							syncFunc[key] = x10.parseFunc(key, record[key]);
