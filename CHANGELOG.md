@@ -1,13 +1,11 @@
 <a name="0.2.14"></a>
 ## [0.2.14](https://github.com/hbi99/QureJS.js/compare/0.2.13...v0.2.14) (2015-11-18)
 
-
-
-
 * gulp file adjusted
 * precede pipe from node worker
 * added pause resume to node thread worker
 * renaming from "WRK_*" to "*Worker"
+
 
 
 <a name="0.2.13"></a>
@@ -18,6 +16,7 @@
 * adjusting tests to the new API
 * handling differences between node/broser worker
 * cleaning up repo
+
 
 
 <a name="0.2.12"></a>

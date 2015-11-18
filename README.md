@@ -3,11 +3,13 @@ Tiny javascript library, enabling codeflow like this
 
 ```js
 Qure
-	.wait(1000).then(function() {
+	.wait(1000)
+	.then(function() {
 		// executed after 1000 milliseconds
 		console.log(1);
 	})
-	.wait(500).then(function() {
+	.wait(500)
+	.then(function() {
 		// executed after 500 milliseconds after previous call
 		console.log(2);
 	})
@@ -17,12 +19,16 @@ Qure
 It is also possible to "fork" the timeline...which enables multiple queueing/chaining, independent of each other.
 
 ```js
-Qure.wait(200).then(function() {
+Qure
+	.wait(200)
+	.then(function() {
 		// executed after 200 milliseconds
 		console.log(1);
 	});
 
-Qure.fork().wait(250).then(function() {
+Qure
+	.fork()
+	.wait(250).then(function() {
 		// executed after 250 milliseconds (50 ms after previous call)
 		console.log(2);
 	})
