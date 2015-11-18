@@ -1,3 +1,4 @@
+* gulp file adjusted
 * precede pipe from node worker
 * added pause resume to node thread worker
 * renaming from "WRK_*" to "*Worker"

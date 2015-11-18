@@ -30,10 +30,10 @@ var banner   = ['/*',
 
 // help instructions
 gulp.task('help', function() {
-	console.log('  gulp tests'.cyan + '\t\tRun all tests'.grey);
+	console.log('  gulp tests'.cyan +   '\t\tRun all tests'.grey);
 	console.log('  gulp tests --file 01'.cyan + '\tRun specific file'.grey);
-	console.log('  gulp minify'.cyan + '\t\tMinify and JSHint files'.grey);
-	console.log('  gulp commit'.cyan + '\t\tCommit and bump version'.grey);
+	console.log('  gulp minify'.cyan +  '\t\tMinify and JSHint files'.grey);
+	console.log('  gulp commit'.cyan +  '\t\tCommit and bump version'.grey);
 	console.log('  gulp release'.cyan + '\t\tCommit, bump, push and release version'.grey);
 });
 
@@ -91,6 +91,7 @@ gulp.task('bump-version', function() {
 
 
 gulp.task('commit-changes', function() {
+	PKG = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 	return gulp.src('.')
 				.pipe($.git.add())
 				.pipe($.git.commit('['+ PKG.version +'] Bumped version number'));
