@@ -36,6 +36,7 @@ Qure
 ```
 
 ### To-do's
+- [ ] npm integration + sub-modules
 - [ ] Add 'settings' method - debug purpose
 - [ ] Add 'begin' method ?
 - [ ] Load-method in Node environment
