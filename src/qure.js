@@ -89,11 +89,10 @@
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
 					func = event.data[0];
-				if (['pause', 'resume'].indexOf(func) > -1) {
-					this.qure[func].apply(this.qure, args);
-				} else {
-					this.qure.resume.apply(this.qure, args);
+				if (['pause', 'resume', 'precede'].indexOf(func) === -1) {
+					func = 'resume';
 				}
+				this.qure[func].apply(this.qure, args);
 			};
 
 			return worker;
@@ -159,9 +158,9 @@
 				else hash.push(key +':'+ val);
 			}
 			if (isNode) {
-				hash.push("pause:"+ "function() { process.send(JSON.stringify(['pause'].concat(Array.prototype.slice.call(arguments)))); }");
-				hash.push("resume:"+ "function() { process.send(JSON.stringify(['resume'].concat(Array.prototype.slice.call(arguments)))); }");
-				// TODO: precede, then
+				hash.push("pause   : function() { process.send(JSON.stringify(['pause'].concat(Array.prototype.slice.call(arguments)))); }");
+				hash.push("resume  : function() { process.send(JSON.stringify(['resume'].concat(Array.prototype.slice.call(arguments)))); }");
+				hash.push("precede : function() { process.send(JSON.stringify(['precede'].concat(Array.prototype.slice.call(arguments)))); }");
 			}
 			return hash;
 		},
@@ -177,9 +176,9 @@
 			body = body.replace(/\bmodule\b/g,  'this._globals.module');
 			// shortcut to qure functions
 			body = body.replace(/\.pause\(/g,   '._globals.qure.pause(');
-			body = body.replace(/\.precede\(/g, '._globals.qure.precede(');
-			body = body.replace(/\.then\(/g,    '._globals.qure.then(');
 			body = body.replace(/\.resume\(/g,  '._globals.qure.resume(');
+			body = body.replace(/\.precede\(/g, '._globals.qure.precede(');
+			//body = body.replace(/\.then\(/g,    '._globals.qure.then(');
 			// run, fork, require, declare, wait
 			//console.log( body );
 
