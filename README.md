@@ -42,7 +42,7 @@ Qure
 - [ ] Metaphorical support for Confirm & Prompt ?
 - [ ] Wait for 'Qure' instance
 - [ ] Save sequence for replay ?
-- [ ] build-in support for rest-API ?
+- [ ] built-in support for rest-API ?
 
 
 ### Testing
