@@ -1,3 +1,7 @@
+* testing npm modularized usage
+
+
+
 <a name="0.2.14"></a>
 ## [0.2.14](https://github.com/hbi99/QureJS.js/compare/0.2.13...v0.2.14) (2015-11-18)
 
