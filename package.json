@@ -43,6 +43,8 @@
     "gulp-util": "^3.0.7",
     "jshint-stylish": "^2.0.1",
     "mysql": "^2.9.0",
+    "qure-fs": "^1.0.0",
+    "qure-mysql": "^1.0.0",
     "run-sequence": "^1.1.4"
   }
 }
