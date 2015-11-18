@@ -1,3 +1,9 @@
+<a name="0.2.14"></a>
+## [0.2.14](https://github.com/hbi99/QureJS.js/compare/0.2.13...v0.2.14) (2015-11-18)
+
+
+
+
 * gulp file adjusted
 * precede pipe from node worker
 * added pause resume to node thread worker

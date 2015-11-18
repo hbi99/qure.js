@@ -1,5 +1,5 @@
 /*
- * qure.js [v0.2.12]
+ * qure.js [v0.2.13]
  * https://github.com/hbi99/QureJS.js 
  * Copyright (c) 2013-2015, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
@@ -95,7 +95,10 @@
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
 					func = event.data[0];
-				this.qure.resume.apply(this.qure, args);
+				if (['pause', 'resume', 'precede'].indexOf(func) === -1) {
+					func = 'resume';
+				}
+				this.qure[func].apply(this.qure, args);
 			};
 
 			return worker;
@@ -160,6 +163,11 @@
 				if (isArray) hash.push(val);
 				else hash.push(key +':'+ val);
 			}
+			if (isNode) {
+				hash.push("pause   : function() { process.send(JSON.stringify(['pause'].concat(Array.prototype.slice.call(arguments)))); }");
+				hash.push("resume  : function() { process.send(JSON.stringify(['resume'].concat(Array.prototype.slice.call(arguments)))); }");
+				hash.push("precede : function() { process.send(JSON.stringify(['precede'].concat(Array.prototype.slice.call(arguments)))); }");
+			}
 			return hash;
 		},
 		parseFunc: function(name, func) {
@@ -174,9 +182,9 @@
 			body = body.replace(/\bmodule\b/g,  'this._globals.module');
 			// shortcut to qure functions
 			body = body.replace(/\.pause\(/g,   '._globals.qure.pause(');
-			body = body.replace(/\.precede\(/g, '._globals.qure.precede(');
-			body = body.replace(/\.then\(/g,    '._globals.qure.then(');
 			body = body.replace(/\.resume\(/g,  '._globals.qure.resume(');
+			body = body.replace(/\.precede\(/g, '._globals.qure.precede(');
+			//body = body.replace(/\.then\(/g,    '._globals.qure.then(');
 			// run, fork, require, declare, wait
 			//console.log( body );
 
@@ -306,7 +314,7 @@
 							tRecord[key] = record[key];
 							continue;
 						}
-						if (key.slice(0,4) === 'WRK_') {
+						if (key.slice(-6) === 'Worker') {
 							tRecord[key] = record[key];
 						} else {
 							syncFunc[key] = x10.parseFunc(key, record[key]);
