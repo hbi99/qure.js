@@ -36,8 +36,8 @@ Qure
 ```
 
 ### To-do's
-- [ ] npm integration + sub-modules
 - [ ] Add 'settings' method - debug purpose
+- [ ] Add 'watch' method ?
 - [ ] Add 'begin' method ?
 - [ ] Load-method in Node environment
 - [ ] Metaphorical support for Confirm & Prompt ?
@@ -47,6 +47,7 @@ Qure
 
 
 ### Testing
+- [ ] npm integration + sub-modules
 - [x] Child process spawning and killing
 - [x] Threaded recursion (web worker)
 - [x] Precede queue
