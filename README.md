@@ -36,6 +36,7 @@ Qure
 ```
 
 ### To-do's
+- [ ] Handle response handlers better
 - [ ] Declare 'sequence' ?
 - [ ] Add 'settings' method - debug purpose
 - [ ] Add 'watch' method ?
