@@ -6,7 +6,7 @@
 var Qure = require('../src/qure.js'),
 	qureFs = require('qure-fs');
 
-describe('Testing recursion', function() {
+describe('Testing threaded recursion with external module', function() {
 
 	/* 
 	 * 

@@ -294,13 +294,9 @@
 			var self = this,
 				func = function() {
 					var tRecord = {},
+						isWorkers = record.workers,
 						key,
 						prop;
-					if (typeof(record) === 'function') {
-						record = {
-							single_anonymous_func: record
-						};
-					}
 					for (key in record) {
 						prop = record[key];
 						if (prop.constructor !== Function) {
@@ -308,7 +304,7 @@
 							tRecord[key] = record[key];
 							continue;
 						}
-						if (key.slice(-6) === 'Worker') {
+						if (isWorkers) {
 							tRecord[key] = record[key];
 						} else {
 							syncFunc[key] = x10.parseFunc(key, record[key]);
@@ -324,7 +320,7 @@
 			var self = this,
 				args = Array.prototype.slice.call(arguments),
 				fn = function() {
-					var name = (workFunc[args[0]] || syncFunc[args[0]]) ? args.shift() : 'single_anonymous_func';
+					var name = args.shift();
 
 					if (syncFunc[name]) {
 						// this is a sync call

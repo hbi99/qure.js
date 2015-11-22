@@ -12,10 +12,13 @@
 // some functions first
 Qure
 	.declare({
+		// declare type (omitted or false = not threaded)
+		workers: true,
 		// fibonacci numbers
-		WRK_fibonacci: function(n) {
+		fibonacci: function(n) {
 			return (n < 2) ? 1 : self(n-2) + self(n-1);
 		},
+		// just a loop
 		loop: function(len) {
 			while (len--) {}
 			return len;
@@ -25,7 +28,7 @@ Qure
 	.then(function(res) {
 		console.log('Loop done!', res);
 	})
-	.run('WRK_fibonacci', 17)
+	.run('fibonacci', 17)
 	.then(function(res) {
 		console.log(res);
 		// 39088169

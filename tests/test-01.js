@@ -13,7 +13,8 @@ describe('Simple test of the methods "wait" and "then"', function() {
 	it('should work fine', function(done) {
 		
 		Qure
-			.wait(100).then(function() {
+			.wait(100)
+			.then(function() {
 				done();
 			});
 		
@@ -25,10 +26,12 @@ describe('Simple test of the methods "wait" and "then"', function() {
 	it('with preserved "this"', function(done) {
 		
 		Qure
-			.wait(100).then(function() {
+			.wait(100)
+			.then(function() {
 				this.a = 1;
 			})
-			.wait(100).then(function() {
+			.wait(100)
+			.then(function() {
 				done();
 
 				if (JSON.stringify(this) !== '{"a":1}') {

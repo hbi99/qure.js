@@ -17,23 +17,25 @@ describe('Testing threaded recursion', function() {
 		
 		Qure
 			.declare({
+				// declare type (omitted or false = not threaded)
+				workers: true,
 				// fibonacci numbers
-				fibonacciWorker: function(n) {
-					return (n < 2) ? 1 : this.fibonacciWorker(n-2) + this.fibonacciWorker(n-1);
+				fibonacci: function(n) {
+					return (n < 2) ? 1 : this.fibonacci(n-2) + this.fibonacci(n-1);
 				},
 				// factorial numbers
-				factorialWorker: function(n) {
-					return (n <= 0) ? 1 : (n * this.factorialWorker(n - 1));
+				factorial: function(n) {
+					return (n <= 0) ? 1 : (n * this.factorial(n - 1));
 				}
 			})
-			.run('factorialWorker', 6)
+			.run('factorial', 6)
 			.then(function(res) {
 				// verify the result
 				if (res !== 720) {
 					console.log( '\tUnexpected value!' );
 				}
 			})
-			.run('fibonacciWorker', 41)
+			.run('fibonacci', 41)
 			.then(function(res) {
 				// verify the result
 				if (res !== 267914296) {

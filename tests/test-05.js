@@ -5,16 +5,19 @@
 
 var Qure = require('../src/qure.js');
 
-describe('Testing recursion', function() {
+describe('Testing threaded recursion', function() {
 
 	/* 
 	 * 
 	 */
-	it('on file system', function(done) {
+	it('on filesystem', function(done) {
 		
 		Qure
 			.declare({
-				readdirWorker: function(path, list) {
+				// declare type (omitted or false = not threaded)
+				workers: true,
+				// declare functions
+				readdir: function(path, list) {
 					var that = this;
 
 					// prerequisites
@@ -28,12 +31,12 @@ describe('Testing recursion', function() {
 					this.pause(true);
 					
 					// make async call
-					this.walkWorker(path, function(err, list) {
+					this.walk(path, function(err, list) {
 						// resume queue
 						that.resume(list);
 					});
 				},
-				walkWorker: function(path, callback, level) {
+				walk: function(path, callback, level) {
 					var that = this,
 						results = [],
 						fs = this.fs,
@@ -51,7 +54,7 @@ describe('Testing recursion', function() {
 										if (!--pending) callback(null, results);
 										return;
 									}
-									that.walkWorker(file, function(err, res) {
+									that.walk(file, function(err, res) {
 										results = results.concat(res);
 										if (!--pending) callback(null, results);
 									});
@@ -64,7 +67,7 @@ describe('Testing recursion', function() {
 					});
 				}
 			})
-			.run('readdirWorker', __dirname +'/../demo')
+			.run('readdir', __dirname +'/../demo')
 			.then(function(res) {
 				// print out directory listing
 				console.log(res);

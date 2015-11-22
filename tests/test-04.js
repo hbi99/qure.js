@@ -5,15 +5,18 @@
 
 var Qure = require('../src/qure.js');
 
-describe('Testing recursion', function() {
+describe('Testing I/O blocking recursion', function() {
 
 	/* 
 	 * 
 	 */
-	it('on file system', function(done) {
+	it('on filesystem', function(done) {
 		
 		Qure
 			.declare({
+				// declare type (omitted or false = not threaded)
+				workers: false,
+				// declare functions
 				readdir: function(path, list) {
 					var that = this;
 

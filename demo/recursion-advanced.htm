@@ -12,36 +12,38 @@
 // recursive functions
 Qure
 	.declare({
+		// declare type (omitted or false = not threaded)
+		workers: true,
 		// fibonacci numbers
-		fibonacciWorker: function(n) {
+		fibonacci: function(n) {
 			return (n < 2) ? 1 : self(n-2) + self(n-1);
 		},
 		// factorial numbers
-		factorialWorker: function(n) {
+		factorial: function(n) {
 			return (n <= 0) ? 1 : (n * self(n - 1));
 		},
 		// calling sibling function using 'this'
-		fooWorker: function(n) {
+		foo: function(n) {
 			// return calculating the 21th factorial number
-			return this.factorialWorker(n);
+			return this.factorial(n);
 		}
 	})
-	.run('fibonacciWorker', 36)
+	.run('fibonacci', 36)
 	.then(function(res) {
 		console.log('The 36th fibonacci number is: '+ res);
 		// 24157817
 	})
-	.run('fibonacciWorker', 41)
+	.run('fibonacci', 41)
 	.then(function(res) {
 		console.log('The 41th fibonacci number is: '+ res);
 		// 267914296
 	})
-	.run('fibonacciWorker', 42)
+	.run('fibonacci', 42)
 	.then(function(res) {
 		console.log('The 42nd fibonacci number is: '+ res);
 		// 433494437
 	})
-	.run('fooWorker', 21)
+	.run('foo', 21)
 	.then(function(res) {
 		console.log(res);
 		// 51090942171709440000

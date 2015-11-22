@@ -12,11 +12,14 @@
 // fibonacci numbers
 Qure
 	.declare({
-		fibonacciWorker: function(n) {
+		// declare type (omitted or false = not threaded)
+		workers: true,
+		// fibonacci numbers
+		fibonacci: function(n) {
 			return (n < 2) ? 1 : self(n-2) + self(n-1);
 		}
 	})
-	.run('fibonacciWorker', 43)
+	.run('fibonacci', 43)
 	.then(function(res) {
 		console.log('The 43rd fibonacci number is: '+ res);
 	})

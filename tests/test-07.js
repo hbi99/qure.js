@@ -5,7 +5,7 @@
 
 var Qure = require('../src/qure.js');
 
-describe('Testing database', function() {
+describe('Testing threaded database with external module', function() {
 
 	/* 
 	 * 

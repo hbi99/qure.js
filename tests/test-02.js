@@ -5,7 +5,7 @@
 
 var Qure = require('../src/qure.js');
 
-describe('Testing recursion', function() {
+describe('Testing I/O blocking recursion', function() {
 
 	/* 
 	 * Simple testing of recursion with fibonacci numbers
@@ -14,6 +14,8 @@ describe('Testing recursion', function() {
 		
 		Qure
 			.declare({
+				// declare type (omitted or false = not threaded)
+				workers: false,
 				// fibonacci numbers
 				fibonacci: function(n) {
 					return (n < 2) ? 1 : this.fibonacci(n-2) + this.fibonacci(n-1);
