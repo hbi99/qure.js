@@ -1,3 +1,5 @@
+* adding xhr support in node-env
+* main property in 'package.json' fixed
 * added hint-task to gulpfile
 * new test file (test-08.js)
 * module api update
