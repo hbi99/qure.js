@@ -36,7 +36,8 @@ Qure
 ```
 
 ### To-do's
-- [ ] Handle response handlers better
+- [ ] Support CRUD requests
+- [ ] Handle response handlers better (node XHR)
 - [ ] Declare 'sequence' ?
 - [ ] Add 'settings' method - debug purpose
 - [ ] Add 'watch' method ?
