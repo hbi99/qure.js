@@ -36,6 +36,7 @@ Qure
 ```
 
 ### To-do's
+- [ ] Declare 'sequence' ?
 - [ ] Add 'settings' method - debug purpose
 - [ ] Add 'watch' method ?
 - [ ] Add 'begin' method ?
