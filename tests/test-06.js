@@ -15,10 +15,10 @@ describe('Testing threaded recursion with external module', function() {
 		
 		Qure
 			.declare(qureFs)
-			.run('readdirWorker', __dirname +'/../demo')
+			.run('readdir', __dirname +'/../demo')
 			.then(function(res) {
 				// print out directory listing
-				console.log(res);
+				console.log('\n', res);
 				// send 'finished' signal to unit-tester
 				done();
 			});

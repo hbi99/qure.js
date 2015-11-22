@@ -23,7 +23,7 @@ describe('Testing threaded database with external module', function() {
 						database : 'my_db'
 					});
 				},
-				select: function(query) {
+				query: function(query) {
 					var that = this;
 
 					// pause the queue
@@ -44,7 +44,7 @@ describe('Testing threaded database with external module', function() {
 					});
 				}
 			})
-			.run('select', 'SELECT 1 + 1 AS solution')
+			.run('query', 'SELECT 1 + 1 AS solution')
 			.then(function(rows) {
 				console.log('The solution is: ', rows[0].solution);
 				done();

@@ -70,7 +70,7 @@ describe('Testing threaded recursion', function() {
 			.run('readdir', __dirname +'/../demo')
 			.then(function(res) {
 				// print out directory listing
-				console.log(res);
+				console.log('\n', res);
 				// send 'finished' signal to unit-tester
 				done();
 			});
