@@ -1,3 +1,4 @@
+* added hint-task to gulpfile
 * new test file (test-08.js)
 * module api update
 * npm modules update
