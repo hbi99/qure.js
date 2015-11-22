@@ -16,6 +16,7 @@ var DATE  = new Date(),
 	SRC   = 'src/qure.js',
 	DEST  = 'dist/',
 	TESTS = 'tests/*',
+	HINTS = ['./src/*', './tests/*'],
 	PKG   = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 
@@ -53,7 +54,7 @@ gulp.task('tests', function() {
 
 
 gulp.task('hint', function() {
-	return gulp.src('./src/*')
+	return gulp.src(HINTS)
 				.pipe($.jshint())
 				.pipe($.jshint.reporter('jshint-stylish'));
 });
