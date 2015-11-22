@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>QureJS - Multiple declarations</title>
+<script type="text/javascript" src="../src/qure.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+
+Qure
+	.declare({
+		// declare threaded functions
+		workers: true,
+		// fibonacci numbers
+		fibonacci: function(n) {
+			return (n < 2) ? 1 : this.fibonacci(n-2) + this.fibonacci(n-1);
+		}
+	})
+	.declare({
+		// declare I/O blocking functions
+		workers: false,
+		// factorial numbers
+		factorial: function(n) {
+			return (n <= 0) ? 1 : (n * this.factorial(n - 1));
+		}
+	})
+	.run('fibonacci', 7)
+	.then(function(res) {
+		console.log(res);
+	})
+	.run('factorial', 7)
+	.then(function(res) {
+		console.log(res);
+	})
+;
+
+</script>
+
+</body>
+</html>
