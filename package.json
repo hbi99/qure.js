@@ -8,7 +8,7 @@
     "url": "https://github.com/hbi99"
   },
   "homepage": "https://github.com/hbi99/QureJS.js",
-  "main": "./dist/qurejs",
+  "main": "./dist/qure.js",
   "keywords": [
     "javascript",
     "concurrency",
