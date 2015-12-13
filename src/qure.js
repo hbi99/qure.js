@@ -190,7 +190,41 @@
 	};
 
 	// cors request
-	function CORSreq(owner, url, hash, key) {
+	function CORSreq(owner, opt) {
+		var xhr = new XMLHttpRequest(),
+			method = opt.method || 'GET',
+			url = opt.url,
+			params;
+		if (opt.data) {
+			params = param.parse(opt.data);
+			// append params to url
+			if (method === 'GET' && opt.data) {
+				url += (url.indexOf('?') === -1)? '?' : '&';
+				url += param.parse(opt.data);
+			}
+		}
+		if ('withCredentials' in xhr) {
+			// allways async request
+			xhr.open(method, url, true);
+		}
+
+		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		xhr.onload = this.doload;
+		xhr.owner  = owner;
+		xhr.send(params);
+	};
+	CORSreq.prototype = {
+		doload: function(event) {
+			var resp = event.target.responseText,
+				args = [resp];
+
+			this.owner.queue._paused = false;
+			this.owner.queue.flush.apply(this.owner.queue, args);
+		}
+	};
+
+	// cors request
+	function CORSreq_old(owner, url, hash, key) {
 		var method = 'GET',
 			xhr = new XMLHttpRequest();
 		if ('withCredentials' in xhr) {
@@ -208,9 +242,10 @@
 		xhr.onload = this.doload;
 		return xhr;
 	}
-	CORSreq.prototype = {
+	CORSreq_old.prototype = {
 		doload: function(event) {
-			var resp = JSON.parse(event.target.responseText),
+			//var resp = JSON.parse(event.target.responseText),
+			var resp = event.target.responseText,
 				args = [],
 				isDone = true,
 				name;
@@ -226,6 +261,54 @@
 			}
 			this.owner.queue._paused = false;
 			this.owner.queue.flush.apply(this.owner.queue, args);
+		}
+	};
+
+	// parameter parser
+	var param = {
+		parse: function(obj) {
+			var self = this,
+				prefix;
+			// reset serialize
+			this.serialize = [];
+
+			if (obj.constructor === Array) {
+				// Serialize the form elements
+				obj.forEach(function(item, i) {
+					self.add(i, item);
+				});
+			} else {
+				// Encode params recursively.
+				for (prefix in obj) {
+					this.build(prefix, obj[prefix]);
+				}
+			}
+			// Return the resulting serialization
+			return this.serialize.join('&');
+		},
+		add: function(key, value) {
+			// If value is a function, invoke it and return its value
+			value = (value.constructor === Function)? value() : (value == null ? '' : value);
+			this.serialize.push(encodeURIComponent( key ) +'='+ encodeURIComponent( value ));
+		},
+		build: function(prefix, obj) {
+			var self = this,
+				name;
+			if (obj.constructor === Array) {
+				// Serialize array item.
+				obj.forEach(function(item, i) {
+					// Item is non-scalar (array or object), encode its numeric index.
+					self.build(prefix +'['+ (typeof item === 'object' && item != null ? i : '') +']', item);
+				});
+			} else if (typeof(obj) === 'object') {
+				// Serialize object item.
+				for (name in obj) {
+					this.build(prefix +"["+ name +"]", obj[ name ]);
+				}
+			} else {
+				// Serialize scalar item.
+				this.add(prefix, obj);
+			}
 		}
 	};
 
@@ -263,7 +346,7 @@
 						args = arguments;
 					}
 					fn.apply(self.queue._that, args);
-					// kill child process, if queue is done and cp exists
+					// kill child process, if queue is done and childprocess exists
 					if (!self.queue._methods.length && workFunc._worker && workFunc._worker.process) {
 						workFunc._worker.process.kill();
 					}
@@ -272,12 +355,18 @@
 			return this;
 		},
 		xhr: function(opt) {
-
+			var self = this,
+				fn = function() {
+					new CORSreq(self, opt);
+				};
+			fn._paused = true;
+			this.queue.push(fn);
+			return this;
 		},
 		require: function(url, hash, key) {
 			var self = this,
 				fn = function() {
-					var cors = new CORSreq(self, url, hash, key);
+					var cors = new CORSreq_old(self, url, hash, key);
 					cors.send();
 				};
 			if (typeof(url) === 'object') {

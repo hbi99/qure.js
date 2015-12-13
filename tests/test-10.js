@@ -13,8 +13,8 @@ describe('Testing require method, geting json file', function() {
 	it('on file system', function(done) {
 		
 		Qure
-			//.require('../demo/test1.json')
 			.xhr({
+				//url  : 'http://sandbox/test.php',
 				url  : '../demo/test1.json',
 				data : {
 					"foo": "bar"
