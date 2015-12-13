@@ -1,3 +1,4 @@
+* xhr supporting GET & POST (node & browser)
 * basic support for xhr requests in node env
 * moving node-worker into separate file
 * adding xhr support in node-env
