@@ -1,3 +1,4 @@
+* moving node-worker into separate file
 * adding xhr support in node-env
 * main property in 'package.json' fixed
 * added hint-task to gulpfile
