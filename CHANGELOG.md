@@ -1,3 +1,4 @@
+* basic support for xhr requests in node env
 * moving node-worker into separate file
 * adding xhr support in node-env
 * main property in 'package.json' fixed

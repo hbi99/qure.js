@@ -65,7 +65,7 @@
 					process.send(JSON.stringify([func, res]));
 				};
 				// create the worker
-				worker = worker = new NodeWorker();
+				worker = worker = new Worker();
 				// prepare script for the worker
 				script = script +'process.on("message", '+ work_handler.toString() +');';
 				// send function record to worker
@@ -271,6 +271,9 @@
 			this.queue.push(func);
 			return this;
 		},
+		xhr: function(opt) {
+
+		},
 		require: function(url, hash, key) {
 			var self = this,
 				fn = function() {
@@ -356,8 +359,10 @@
 
 
 	if (isNode) {
+		console.log(1);
 		// worker class for node environment
-		var NodeWorker = require('./worker');
+		Worker = require('./worker');
+		XMLHttpRequest = require('./xhr');
 	}
 
 	// Export
