@@ -65,7 +65,7 @@
 					process.send(JSON.stringify([func, res]));
 				};
 				// create the worker
-				worker = worker = new Worker();
+				worker = worker = new window.Worker();
 				// prepare script for the worker
 				script = script +'process.on("message", '+ work_handler.toString() +');';
 				// send function record to worker
@@ -82,7 +82,7 @@
 				// script blob for the worker
 				blob = new Blob([script +'self.addEventListener("message", '+ work_handler.toString() +', false);'], {type: 'text/javascript'});
 				// create the worker
-				worker = new Worker(url.createObjectURL(blob));
+				worker = new window.Worker(url.createObjectURL(blob));
 			}
 
 			// thread pipe
@@ -191,7 +191,7 @@
 
 	// cors request
 	function CORSreq(owner, opt) {
-		var xhr = new XMLHttpRequest(),
+		var xhr = new window.XMLHttpRequest(),
 			method = opt.method || 'GET',
 			url = opt.url,
 			params;
@@ -207,16 +207,18 @@
 			// allways async request
 			xhr.open(method, url, true);
 		}
-
 		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-		xhr.onload = this.doload;
-		xhr.owner  = owner;
+		xhr.onreadystatechange = this.readystatechange;
+		xhr.owner = owner;
 		xhr.send(params);
 	};
 	CORSreq.prototype = {
-		doload: function(event) {
-			var resp = event.target.responseText,
+		readystatechange: function(event) {
+			var req  = event.target,
+				resp = req.responseText,
 				args = [resp];
+			
+			if (req.status !== 200 || req.readyState !== 4) return;
 
 			this.owner.queue._paused = false;
 			this.owner.queue.flush.apply(this.owner.queue, args);
@@ -226,7 +228,7 @@
 	// cors request
 	function CORSreq_old(owner, url, hash, key) {
 		var method = 'GET',
-			xhr = new XMLHttpRequest();
+			xhr = new window.XMLHttpRequest();
 		if ('withCredentials' in xhr) {
 			xhr.open(method, url, true);
 		} else if (typeof XDomainRequest != 'undefined') {
@@ -448,10 +450,9 @@
 
 
 	if (isNode) {
-		console.log(1);
 		// worker class for node environment
-		Worker = require('./worker');
-		XMLHttpRequest = require('./xhr');
+		window.Worker = require('./worker');
+		window.XMLHttpRequest = require('./xhr');
 	}
 
 	// Export

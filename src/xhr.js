@@ -1,7 +1,6 @@
 
 var HTTP = require('http'),
 	URL  = require('url'),
-	querystring = require('querystring'),
 	request,
 	settings,
 	postData;
@@ -48,20 +47,13 @@ XMLHttpRequest.prototype = {
 			hostname : urlInfo.host,
 			path     : urlInfo.path,
 			method   : method,
-			headers  : {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			}
+			headers  : {}
 		};
 		// set state to 'opened'
 		this.readyState = 1;
 	},
 	send: function(data) {
-		var self = this,
-			qStr = querystring.stringify(data);
-
-		if (settings.method === 'GET') {
-			settings.path += '?'+ qStr;
-		}
+		var self = this;
 
 		request = HTTP.request(settings, function(res) {
 			// set state to 'headers_received'
@@ -70,11 +62,15 @@ XMLHttpRequest.prototype = {
 			res.setEncoding('utf8');
 			// add listener
 			res.on('data', function (str) {
+				var ev = {
+					type: 'load',
+					target: self
+				};
 				// set state to 'done'
 				self.readyState = 4;
 				self.status = 200;
 				self.responseText = str;
-				self.onreadystatechange();
+				if (self.onreadystatechange) self.onreadystatechange(ev);
 			});
 		});
 
@@ -84,11 +80,11 @@ XMLHttpRequest.prototype = {
 			self.status = 0;
 			self.statusText = err.stack;
 			self.responseText = err.message;
-			self.onreadystatechange();
+			if (self.onreadystatechange) self.onreadystatechange(ev);
 		});
 
 		// write data to request body
-		request.write(qStr);
+		request.write(data || '');
 		request.end();
 	},
 	getRequestHeader: function(name) {

@@ -14,8 +14,8 @@ describe('Testing require method, geting json file', function() {
 		
 		Qure
 			.xhr({
-				url  : 'http://sandbox/node-response/get.php',
-			//	url  : 'http://sandbox/test.php',
+				method : 'POST',
+				url  : 'http://sandbox/node-response/post.php',
 			//	url  : '../demo/test1.json',
 				data : {
 					"foo": "bar"
