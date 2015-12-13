@@ -42,7 +42,8 @@ Qure
 - [ ] Add 'settings' method - debug purpose
 - [ ] Add 'watch' method ?
 - [ ] Add 'begin' method ?
-- [ ] Load-method in Node environment
+- [ ] Load-method & XDomainRequest in Node environment
+- [ ] qure.autoparse response
 - [ ] Metaphorical support for Confirm & Prompt ?
 - [ ] Wait for 'Qure' instance
 - [ ] Save sequence for replay ?
