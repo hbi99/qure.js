@@ -246,47 +246,6 @@
 		}
 	};
 
-	// cors request
-	function CORSreq_old(owner, url, hash, key) {
-		var method = 'GET',
-			xhr = new window.XMLHttpRequest();
-		if ('withCredentials' in xhr) {
-			xhr.open(method, url, true);
-		} else if (typeof XDomainRequest != 'undefined') {
-			xhr = new XDomainRequest();
-			xhr.open(method, url);
-		} else {
-			// no-support -> fallback: JSReq ?
-			throw 'XHR not supported';
-		}
-		xhr.hash   = hash;
-		xhr.key    = key;
-		xhr.owner  = owner;
-		xhr.onload = this.doload;
-		return xhr;
-	}
-	CORSreq_old.prototype = {
-		doload: function(event) {
-			//var resp = JSON.parse(event.target.responseText),
-			var resp = event.target.responseText,
-				args = [],
-				isDone = true,
-				name;
-			if (this.hash) {
-				this.hash[this.key] = resp;
-
-				for (name in this.hash) {
-					if (typeof(this.hash[name]) === 'string') isDone = false;
-				}
-				if (isDone) {
-					args.push(this.hash._single ? this.hash._single : this.hash);
-				}
-			}
-			this.owner.queue._paused = false;
-			this.owner.queue.flush.apply(this.owner.queue, args);
-		}
-	};
-
 	// parameter parser
 	var param = {
 		parse: function(obj) {
@@ -398,25 +357,6 @@
 				return this;
 			} else if (!hash) {
 				this.load({_single: opt});
-				return this;
-			}
-			fn._paused = true;
-			this.queue.push(fn);
-			return this;
-		},
-		require: function(url, hash, key) {
-			var self = this,
-				fn = function() {
-					var cors = new CORSreq_old(self, url, hash, key);
-					cors.send();
-				};
-			if (typeof(url) === 'object') {
-				for (var name in url) {
-					this.require(url[name], url, name);
-				}
-				return this;
-			} else if (!hash) {
-				this.require({_single: url});
 				return this;
 			}
 			fn._paused = true;
