@@ -190,7 +190,7 @@
 	};
 
 	// cors request
-	function CORSreq(owner, opt) {
+	function CORSreq(owner, opt, hash, key) {
 		var xhr = new window.XMLHttpRequest(),
 			method = opt.method || 'GET',
 			url = opt.url,
@@ -209,17 +209,38 @@
 		}
 		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 		xhr.onreadystatechange = this.readystatechange;
+		xhr.hash  = hash;
+		xhr.key   = key;
 		xhr.owner = owner;
 		xhr.send(params);
 	};
 	CORSreq.prototype = {
 		readystatechange: function(event) {
 			var req  = event.target,
-				resp = req.responseText,
-				args = [resp];
+				aHash = {},
+				args = [],
+				isDone = true,
+				name;
 			
 			if (req.status !== 200 || req.readyState !== 4) return;
 
+			if (this.hash) {
+				this.hash[this.key] = {
+					responseText: req.responseText,
+					status: req.status
+				};
+				for (name in this.hash) {
+					if (this.hash[name].status !== 200) {
+						isDone = false;
+					}
+				}
+				if (isDone) {
+					for (name in this.hash) {
+						aHash[name] = this.hash[name].responseText;
+					}
+					args.push(this.hash._single ? this.hash._single.responseText : aHash);
+				}
+			}
 			this.owner.queue._paused = false;
 			this.owner.queue.flush.apply(this.owner.queue, args);
 		}
@@ -361,6 +382,24 @@
 				fn = function() {
 					new CORSreq(self, opt);
 				};
+			fn._paused = true;
+			this.queue.push(fn);
+			return this;
+		},
+		load: function(opt, hash, key) {
+			var self = this,
+				fn = function() {
+					new CORSreq(self, opt, hash, key);
+				};
+			if (!hash && typeof(opt) === 'object') {
+				for (var name in opt) {
+					this.load({url: opt[name]}, opt, name);
+				}
+				return this;
+			} else if (!hash) {
+				this.load({_single: opt});
+				return this;
+			}
 			fn._paused = true;
 			this.queue.push(fn);
 			return this;
