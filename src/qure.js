@@ -240,6 +240,11 @@
 					}
 					args.push(this.hash._single ? this.hash._single.responseText : aHash);
 				}
+			} else {
+				args.push({
+					responseText: req.responseText,
+					status: req.status
+				});
 			}
 			this.owner.queue._paused = false;
 			this.owner.queue.flush.apply(this.owner.queue, args);

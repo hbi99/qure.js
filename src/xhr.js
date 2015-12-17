@@ -53,9 +53,10 @@ XMLHttpRequest.prototype = {
 			headers  : {}
 		};
 		// if local file
-		if (FS.statSync(localPath)) {
+		try {
+			FS.statSync(localPath);
 			settings.localPath = localPath;
-		}
+		} catch(e) {}
 		// set state to 'opened'
 		this.readyState = 1;
 	},
