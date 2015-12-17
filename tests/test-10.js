@@ -5,7 +5,7 @@
 
 var Qure = require('../src/qure.js');
 
-describe('Testing require method, geting json file', function() {
+describe('Testing XHR, with GET method', function() {
 
 	/* 
 	 * 
