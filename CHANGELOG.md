@@ -1,3 +1,5 @@
+* load external javascript
+* auto parse external files
 * xhr supporting GET & POST (node & browser)
 * basic support for xhr requests in node env
 * moving node-worker into separate file
