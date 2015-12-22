@@ -5,7 +5,7 @@
 
 var Qure = require('../src/qure.js');
 
-describe('Testing load method (single file)', function() {
+describe('Loading external javascript resource', function() {
 
 	/* 
 	 * 
@@ -13,9 +13,11 @@ describe('Testing load method (single file)', function() {
 	it('on file system', function(done) {
 		
 		Qure
-			.load('../demo/json/test1.json')
+			.load('../demo/js/test2.js')
 			.then(function(res) {
-				console.log(res);
+				if (res.foo() !== 'bar') {
+					console.log( '\tUnexpected value!' );
+				}
 				done();
 			});
 		

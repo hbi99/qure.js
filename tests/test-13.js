@@ -14,8 +14,8 @@ describe('Testing load method (multiple files)', function() {
 		
 		Qure
 			.load({
-				'test1': '../demo/test1.json',
-				'test2': '../demo/test2.json'
+				'test1': '../demo/json/test1.json',
+				'test2': '../demo/json/test2.json'
 			})
 			.then(function(res) {
 				console.log(res);

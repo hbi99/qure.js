@@ -209,24 +209,55 @@
 		}
 		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 		xhr.onreadystatechange = this.readystatechange;
+		xhr.autoParse = this.autoParse;
 		xhr.hash  = hash;
 		xhr.key   = key;
+		xhr.url   = url;
 		xhr.owner = owner;
 		xhr.send(params);
 	};
 	CORSreq.prototype = {
+		autoParse: function(url, str) {
+			var ext = url.split('.'),
+				ret;
+			// extract extension
+			ext = ext[ext.length-1];
+			// select available autoparser
+			switch(ext) {
+				case 'js':
+					ret = str;
+
+					eval('(function(window, module) {'+ str +'}).bind({})('+
+							'	typeof window !== "undefined" ? window : {},'+
+							'	typeof module !== "undefined" ? module : {}'+
+							');');
+
+					ret = module.exports;
+					delete module.exports;
+					break;
+				case 'json':
+					ret = JSON.parse(str);
+					break;
+				default:
+					ret = str;
+			}
+			return ret;
+		},
 		readystatechange: function(event) {
 			var req  = event.target,
 				aHash = {},
 				args = [],
 				isDone = true,
-				name;
+				name,
+				parsed;
 			
 			if (req.status !== 200 || req.readyState !== 4) return;
+			// try the autoparser
+			parsed = this.autoParse(this.url, req.responseText);
 
 			if (this.hash) {
 				this.hash[this.key] = {
-					responseText: req.responseText,
+					responseText: parsed,
 					status: req.status
 				};
 				for (name in this.hash) {
@@ -242,7 +273,7 @@
 				}
 			} else {
 				args.push({
-					responseText: req.responseText,
+					responseText: parsed,
 					status: req.status
 				});
 			}
