@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>QureJS - Load demo</title>
+<title>QureJS - External javascript</title>
 <script type="text/javascript" src="../src/qure.js"></script>
 </head>
 <body>
@@ -10,18 +10,17 @@
 <script type="text/javascript">
 
 Qure
-	.wait(500)
-	.load('./json/test1.json')
-	.then(function(data) {
-		console.log(data);
+	.load({
+		jquery: './js/jquery.js',
+		test2: './js/test2.js'
 	})
-	.wait(500)
-	.load('./json/test2.json')
-	.then(function(data) {
-		console.log(data);
+	.then(function(libs) {
+		console.log(libs.jquery('.tmp'));
 	});
 
 </script>
+
+<div class="tmp"></div>
 
 </body>
 </html>
