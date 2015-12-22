@@ -224,14 +224,21 @@
 			ext = ext[ext.length-1];
 			// select available autoparser
 			switch(ext) {
+				case 'css':
+					if (isNode) {
+						ret = str;
+					} else {
+						ret = window.document.createElement('style');
+						ret.innerHTML = str;
+					}
+					break;
 				case 'js':
-					ret = str;
-
+					// parse javascript
 					eval('(function(window, module) {'+ str +'}).bind({})('+
 							'	typeof window !== "undefined" ? window : {},'+
 							'	typeof module !== "undefined" ? module : {}'+
 							');');
-
+					// transfer exports to return object and clear variable
 					ret = module.exports;
 					delete module.exports;
 					break;
