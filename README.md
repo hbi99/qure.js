@@ -36,25 +36,19 @@ Qure
 ```
 
 ### To-do's
-- [ ] Support CRUD requests
-- [ ] Handle response handlers better (node XHR)
 - [ ] Declare 'sequence' ?
 - [ ] Add 'settings' method - debug purpose
 - [ ] Add 'watch' method ?
 - [ ] Add 'begin' method ?
-- [ ] Load-method & XDomainRequest in Node environment
-- [ ] qure.autoparse response
 - [ ] Metaphorical support for Confirm & Prompt ?
 - [ ] Wait for 'Qure' instance
 - [ ] Save sequence for replay ?
+- [ ] Support CRUD requests
 - [ ] built-in support for rest-API ?
 
 
 ### Testing
-- [ ] npm integration + sub-modules
-- [x] Child process spawning and killing
-- [x] Threaded recursion (web worker)
-- [x] Precede queue
-- [x] Play/pause support
-- [x] Node support
+- [x] Handle response handlers better (node XHR)
+- [x] Load-method & XDomainRequest in Node environment
+- [x] autoparse xhr response
 
