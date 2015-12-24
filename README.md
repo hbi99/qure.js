@@ -36,6 +36,8 @@ Qure
 ```
 
 ### To-do's
+- [ ] Templating example
+- [ ] Example connect to DefiantJS
 - [ ] Declare 'sequence' ?
 - [ ] Add 'settings' method - debug purpose
 - [ ] Add 'watch' method ?
