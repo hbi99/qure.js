@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+	<store>
+		<book price="12.99">
+			<title>Sword of Honour</title>
+			<category>Fiction</category>
+			<author>Evelyn Waugh</author>
+		</book>
+		<book price="8.99">
+			<title>Moby Dick</title>
+			<category>Fiction</category>
+			<author>Herman Melville</author>
+		</book>
+		<book price="8.95">
+			<title>Sayings of the Century</title>
+			<category>Reference</category>
+			<author>Nigal Rees</author>
+		</book>
+		<book price="22.99">
+			<title>The Lord of the Rings</title>
+			<category>Fiction</category>
+			<author>J.R.R. Tolkien</author>
+		</book>
+		<book price="19.95">
+			<brand>Canondale</brand>
+			<color>Red</color>
+		</book>
+	</store>
+</data>
