@@ -245,6 +245,10 @@
 				case 'json':
 					ret = JSON.parse(str);
 					break;
+			//	case 'xml':
+			//		break;
+			//	case 'xsl':
+			//		break;
 				default:
 					ret = str;
 			}
@@ -429,7 +433,23 @@
 					// compile threaded functions
 					x10.compile(tRecord, self);
 				};
-			this.queue.push(func);
+			if (typeof(record) === 'string') {
+				var fn = function(d) {
+					self.precede(function() {
+						self.fork()
+							.load(record)
+							.then(function(d) {
+								record = d;
+								func(d);
+								self.resume();
+							});
+					});
+				};
+				fn._paused = true;
+				this.precede(fn);
+			} else {
+				this.queue.push(func);
+			}
 			return this;
 		},
 		run: function() {
