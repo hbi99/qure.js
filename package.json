@@ -7,7 +7,7 @@
     "email": "hbi@longscript.com",
     "url": "https://github.com/hbi99"
   },
-  "homepage": "https://github.com/hbi99/QureJS.js",
+  "homepage": "https://github.com/hbi99/qure.js",
   "main": "./dist/qure.js",
   "keywords": [
     "javascript",
@@ -19,10 +19,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hbi99/QureJS.js.git"
+    "url": "https://github.com/hbi99/qure.js.git"
   },
   "bugs": {
-    "url": "https://github.com/hbi99/QureJS.js/issues"
+    "url": "https://github.com/hbi99/qure.js/issues"
   },
   "scripts": {},
   "dependencies": {},
