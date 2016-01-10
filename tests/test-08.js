@@ -15,6 +15,12 @@ describe('Testing threaded database with external module', function() {
 		
 		Qure
 			.declare(qureMysql)
+			.run('settings', {
+				host:     'localhost',
+				user:     'me',
+				password: 'secret',
+				database: 'my_db'
+			})
 			.run('query', 'SELECT 1 + 1 AS solution')
 			.then(function(rows) {
 				console.log('The solution is: ', rows[0].solution);

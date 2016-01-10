@@ -14,13 +14,16 @@ describe('Testing threaded database with external module', function() {
 		
 		Qure
 			.declare({
+				settings: function(conn) {
+					this.conn = conn;
+				},
 				open: function() {
 					this.mysql = require('mysql');
 					this.conn = this.mysql.createConnection({
-						host     : 'localhost',
-						user     : 'me',
-						password : 'secret',
-						database : 'my_db'
+						host     : this.conn.host,
+						user     : this.conn.user,
+						password : this.conn.password,
+						database : this.conn.database
 					});
 				},
 				query: function(query) {
@@ -43,6 +46,12 @@ describe('Testing threaded database with external module', function() {
 						that.resume(rows);
 					});
 				}
+			})
+			.run('settings', {
+				host:     'localhost',
+				user:     'me',
+				password: 'secret',
+				database: 'my_db'
 			})
 			.run('query', 'SELECT 1 + 1 AS solution')
 			.then(function(rows) {
