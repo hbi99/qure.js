@@ -249,8 +249,12 @@
 					break;
 				case 'htm':
 				case 'html':
-					parser = new DOMParser();
-					ret = parser.parseFromString(str, "text/html");
+					if (isNode) {
+						ret = str;
+					} else {
+						parser = new DOMParser();
+						ret = parser.parseFromString(str, "text/html");
+					}
 					break;
 			//	case 'xml':
 			//		break;

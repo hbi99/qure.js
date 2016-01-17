@@ -1,3 +1,4 @@
+* load and parse HTML file
 * load external javascript
 * auto parse external files
 * xhr supporting GET & POST (node & browser)
