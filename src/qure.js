@@ -215,11 +215,12 @@
 		xhr.url   = url;
 		xhr.owner = owner;
 		xhr.send(params);
-	};
+	}
 	CORSreq.prototype = {
 		autoParse: function(url, str) {
 			var ext = url.split('.'),
-				ret;
+				ret,
+				parser;
 			// extract extension
 			ext = ext[ext.length-1];
 			// select available autoparser
@@ -233,17 +234,23 @@
 					}
 					break;
 				case 'js':
-					// parse javascript
+					/* jshint ignore:start */
 					eval('(function(window, module) {'+ str +'}).bind({})('+
 							'	typeof window !== "undefined" ? window : {},'+
 							'	typeof module !== "undefined" ? module : {}'+
 							');');
+					/* jshint ignore:end */
 					// transfer exports to return object and clear variable
 					ret = module.exports;
 					delete module.exports;
 					break;
 				case 'json':
 					ret = JSON.parse(str);
+					break;
+				case 'htm':
+				case 'html':
+					parser = new DOMParser();
+					ret = parser.parseFromString(str, "text/html");
 					break;
 			//	case 'xml':
 			//		break;
@@ -317,7 +324,7 @@
 		},
 		add: function(key, value) {
 			// If value is a function, invoke it and return its value
-			value = (value.constructor === Function)? value() : (value == null ? '' : value);
+			value = (value.constructor === Function)? value() : (value === null ? '' : value);
 			this.serialize.push(encodeURIComponent( key ) +'='+ encodeURIComponent( value ));
 		},
 		build: function(prefix, obj) {
@@ -327,7 +334,7 @@
 				// Serialize array item.
 				obj.forEach(function(item, i) {
 					// Item is non-scalar (array or object), encode its numeric index.
-					self.build(prefix +'['+ (typeof item === 'object' && item != null ? i : '') +']', item);
+					self.build(prefix +'['+ (typeof item === 'object' && item !== null ? i : '') +']', item);
 				});
 			} else if (typeof(obj) === 'object') {
 				// Serialize object item.
