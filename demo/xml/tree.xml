@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+	<i name="folder 1">
+		<i name="folder 2">
+			<i name="File 1" />
+		</i>
+		<i name="File 2" />
+		<i name="File 3" />
+	</i>
+	<i name="folder 3">
+		<i name="File 4" />
+		<i name="File 5" />
+		<i name="File 6" />
+	</i>
+</data>
