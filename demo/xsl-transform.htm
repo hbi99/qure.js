@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>QureJS - XSL Transform</title>
+<script type="text/javascript" src="../src/qure.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+
+Qure
+	.declare({
+		// transformer function
+		transform: function(opt) {
+			
+		}
+	})
+	.load({
+		'xml' : './xml/test.xml',
+		'xsl' : './xsl/test.xsl'
+	})
+	//.run('factorial', 7)
+	.then(function(res) {
+		console.log(res);
+	})
+;
+
+</script>
+
+</body>
+</html>
