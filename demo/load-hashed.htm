@@ -17,6 +17,13 @@ Qure
 	})
 	.then(function(data) {
 		console.log(data);
+	})
+	.load({
+		'xml_doc': './xml/test.xml'
+	})
+	.wait(500)
+	.then(function(data) {
+		console.log(data);
 	});
 
 </script>
