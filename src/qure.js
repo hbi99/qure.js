@@ -218,11 +218,16 @@
 	}
 	CORSreq.prototype = {
 		autoParse: function(url, str) {
-			var ext = url.split('.'),
+			var isDeclare = url.slice(-8) === '?declare',
+				ext = url.split('.'),
 				ret,
 				parser;
 			// extract extension
 			ext = ext[ext.length-1];
+			// trim ext if 'isDeclare'
+			if (isDeclare) {
+				ext = ext.slice(0,-8);
+			}
 			// select available autoparser
 			switch(ext) {
 				case 'css':
@@ -234,15 +239,21 @@
 					}
 					break;
 				case 'js':
-					/* jshint ignore:start */
-					eval('(function(window, module) {'+ str +'}).bind({})('+
-							'	typeof window !== "undefined" ? window : {},'+
-							'	typeof module !== "undefined" ? module : {}'+
-							');');
-					/* jshint ignore:end */
-					// transfer exports to return object and clear variable
-					ret = module.exports;
-					delete module.exports;
+					if (isNode || isDeclare) {
+						/* jshint ignore:start */
+						eval('(function(window, module) {'+ str +'}).bind({})('+
+								'	typeof window !== "undefined" ? window : {},'+
+								'	typeof module !== "undefined" ? module : {}'+
+								');');
+						// transfer exports to return object and clear variable
+						ret = module.exports;
+						delete module.exports;
+						/* jshint ignore:end */
+					} else {
+						ret = document.createElement('script');
+						ret.type = "text/javascript";
+						ret.appendChild(document.createTextNode(str));
+					}
 					break;
 				case 'json':
 					ret = JSON.parse(str);
@@ -452,6 +463,7 @@
 			if (typeof(record) === 'string') {
 				var fn = function(d) {
 					self.precede(function() {
+						record += '?declare';
 						self.fork()
 							.load(record)
 							.then(function(d) {
