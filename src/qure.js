@@ -221,6 +221,7 @@
 			var isDeclare = url.slice(-8) === '?declare',
 				ext = url.split('.'),
 				ret,
+				type,
 				parser;
 			// extract extension
 			ext = ext[ext.length-1];
@@ -260,20 +261,14 @@
 					break;
 				case 'htm':
 				case 'html':
-					if (isNode) {
-						ret = str;
-					} else {
-						parser = new DOMParser();
-						ret = parser.parseFromString(str, "text/html");
-					}
-					break;
+					type = 'text/html';
 				case 'xml':
 				case 'xsl':
 					if (isNode) {
 						ret = str;
 					} else {
 						parser = new DOMParser();
-						ret = parser.parseFromString(str, "text/xml");
+						ret = parser.parseFromString(str, type || 'text/xml');
 					}
 					break;
 				default:
