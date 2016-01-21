@@ -473,7 +473,6 @@
 				args = Array.prototype.slice.call(arguments),
 				fn = function() {
 					var name = args.shift();
-
 					if (syncFunc[name]) {
 						// this is a sync call
 						syncFunc._globals.qure = self;
