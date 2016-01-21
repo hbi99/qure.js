@@ -18,10 +18,10 @@ Qure
 	.then(function(data) {
 		console.log(data);
 	})
+	.wait(500)
 	.load({
 		'xml_doc': './xml/test.xml'
 	})
-	.wait(500)
 	.then(function(data) {
 		console.log(data);
 	});
