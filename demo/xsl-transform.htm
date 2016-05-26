@@ -7,6 +7,8 @@
 </head>
 <body>
 
+<div id="tree"></div>
+
 <script type="text/javascript">
 
 var optTree = {
@@ -27,8 +29,9 @@ Qure
 	.run('transform', optTree)
 	.then(function(res) {
 		console.log(res);
-	})
-;
+		var el = document.getElementById('tree');
+		el.innerHTML = res;
+	});
 
 </script>
 

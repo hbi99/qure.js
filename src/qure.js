@@ -195,26 +195,30 @@
 			method = opt.method || 'GET',
 			url = opt.url,
 			params;
-		if (opt.data) {
-			params = param.parse(opt.data);
-			// append params to url
-			if (method === 'GET' && opt.data) {
-				url += (url.indexOf('?') === -1)? '?' : '&';
-				url += param.parse(opt.data);
+		if (isNode && ) {
+			return require(url);
+		} else {
+			if (opt.data) {
+				params = param.parse(opt.data);
+				// append params to url
+				if (method === 'GET' && opt.data) {
+					url += (url.indexOf('?') === -1)? '?' : '&';
+					url += param.parse(opt.data);
+				}
 			}
+			if ('withCredentials' in xhr) {
+				// allways async request
+				xhr.open(method, url, true);
+			}
+			xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = this.readystatechange;
+			xhr.autoParse = this.autoParse;
+			xhr.hash  = hash;
+			xhr.key   = key;
+			xhr.url   = url;
+			xhr.owner = owner;
+			xhr.send(params);
 		}
-		if ('withCredentials' in xhr) {
-			// allways async request
-			xhr.open(method, url, true);
-		}
-		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-		xhr.onreadystatechange = this.readystatechange;
-		xhr.autoParse = this.autoParse;
-		xhr.hash  = hash;
-		xhr.key   = key;
-		xhr.url   = url;
-		xhr.owner = owner;
-		xhr.send(params);
 	}
 	CORSreq.prototype = {
 		autoParse: function(url, str) {
