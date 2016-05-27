@@ -100,16 +100,12 @@
 		call_handler: function(func, worker, qure) {
 			return function() {
 				var args = Array.prototype.slice.call(arguments);
-
 				// add method name
 				args.unshift(func);
-
 				// pause qure instance
 				qure.pause(true);
-
 				// remeber qure instance
 				worker.qure = qure;
-
 				// start worker
 				worker.postMessage(args);
 			};
@@ -195,32 +191,66 @@
 			method = opt.method || 'GET',
 			url = opt.url,
 			params;
-		if (isNode && ) {
-			return require(url);
-		} else {
-			if (opt.data) {
-				params = param.parse(opt.data);
-				// append params to url
-				if (method === 'GET' && opt.data) {
-					url += (url.indexOf('?') === -1)? '?' : '&';
-					url += param.parse(opt.data);
-				}
+
+		xhr.onreadystatechange = this.readystatechange;
+		xhr.autoParse = this.autoParse;
+		xhr.hash  = hash;
+		xhr.key   = key;
+		xhr.url   = url;
+		xhr.owner = owner;
+
+		if (opt.data) {
+			params = param.parse(opt.data);
+			// append params to url
+			if (method === 'GET' && opt.data) {
+				url += (url.indexOf('?') === -1)? '?' : '&';
+				url += param.parse(opt.data);
 			}
-			if ('withCredentials' in xhr) {
-				// allways async request
-				xhr.open(method, url, true);
-			}
-			xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-			xhr.onreadystatechange = this.readystatechange;
-			xhr.autoParse = this.autoParse;
-			xhr.hash  = hash;
-			xhr.key   = key;
-			xhr.url   = url;
-			xhr.owner = owner;
-			xhr.send(params);
 		}
+		if ('withCredentials' in xhr) {
+			// allways async request
+			xhr.open(method, url, true);
+		}
+		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		xhr.send(params);
 	}
 	CORSreq.prototype = {
+		readystatechange: function(event) {
+			var req  = event.target,
+				aHash = {},
+				args = [],
+				isDone = true,
+				name,
+				parsed;
+			if (req.status !== 200 || req.readyState !== 4) return;
+			// try the autoparser
+			parsed = this.autoParse(this.url, req.responseText);
+
+			if (this.hash) {
+				this.hash[this.key] = {
+					responseText: parsed,
+					status: req.status
+				};
+				for (name in this.hash) {
+					if (this.hash[name].status !== 200) {
+						isDone = false;
+					}
+				}
+				if (isDone) {
+					for (name in this.hash) {
+						aHash[name] = this.hash[name].responseText;
+					}
+					args.push(this.hash._single ? this.hash._single.responseText : aHash);
+				}
+			} else {
+				args.push({
+					responseText: parsed,
+					status: req.status
+				});
+			}
+			this.owner.queue._paused = false;
+			this.owner.queue.flush.apply(this.owner.queue, args);
+		},
 		autoParse: function(url, str) {
 			var isDeclare = url.slice(-8) === '?declare',
 				ext = url.split('.'),
@@ -279,43 +309,6 @@
 					ret = str;
 			}
 			return ret;
-		},
-		readystatechange: function(event) {
-			var req  = event.target,
-				aHash = {},
-				args = [],
-				isDone = true,
-				name,
-				parsed;
-			
-			if (req.status !== 200 || req.readyState !== 4) return;
-			// try the autoparser
-			parsed = this.autoParse(this.url, req.responseText);
-
-			if (this.hash) {
-				this.hash[this.key] = {
-					responseText: parsed,
-					status: req.status
-				};
-				for (name in this.hash) {
-					if (this.hash[name].status !== 200) {
-						isDone = false;
-					}
-				}
-				if (isDone) {
-					for (name in this.hash) {
-						aHash[name] = this.hash[name].responseText;
-					}
-					args.push(this.hash._single ? this.hash._single.responseText : aHash);
-				}
-			} else {
-				args.push({
-					responseText: parsed,
-					status: req.status
-				});
-			}
-			this.owner.queue._paused = false;
-			this.owner.queue.flush.apply(this.owner.queue, args);
 		}
 	};
 
@@ -420,17 +413,17 @@
 		},
 		load: function(opt, hash, key) {
 			var self = this,
+				name,
 				fn = function() {
 					new CORSreq(self, opt, hash, key);
 				};
 			if (!hash && typeof(opt) === 'object') {
-				for (var name in opt) {
+				for (name in opt) {
 					this.load({url: opt[name]}, opt, name);
 				}
 				return this;
 			} else if (!hash) {
-				this.load({_single: opt});
-				return this;
+				return this.load({_single: opt});
 			}
 			fn._paused = true;
 			this.queue.push(fn);

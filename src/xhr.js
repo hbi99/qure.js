@@ -2,7 +2,7 @@
 var HTTP  = require('http'),
 	URL   = require('url'),
 	FS    = require('fs'),
-	PATH  = require('path'),
+//	PATH  = require('path'),
 	request,
 	settings,
 	postData;
@@ -39,8 +39,7 @@ XMLHttpRequest.prototype = {
 	open: function(method, url, async, user, password) {
 		this.abort();
 
-		var urlInfo = URL.parse(url),
-			localPath = PATH.normalize(process.env.PWD +'/'+ url);
+		var urlInfo = URL.parse(url);
 
 		settings = {
 		//	async    : (typeof async !== 'boolean' ? true : async),
@@ -50,13 +49,9 @@ XMLHttpRequest.prototype = {
 			hostname : urlInfo.host,
 			path     : urlInfo.path,
 			method   : method,
+			localPath: url.match(/(http|https)\:\/\//ig) === null,
 			headers  : {}
 		};
-		// if local file
-		try {
-			FS.statSync(localPath);
-			settings.localPath = localPath;
-		} catch(e) {}
 		// set state to 'opened'
 		this.readyState = 1;
 	},
@@ -66,9 +61,10 @@ XMLHttpRequest.prototype = {
 		if (settings.localPath) {
 			// XHR only supports GET
 			if (settings.method !== 'GET') {
+				// handle errors correct ?
 				throw new Error('XHR: Only GET method is supported');
 			}
-			FS.readFile(settings.localPath, 'utf8', function(error, data) {
+			FS.readFile(settings.path, 'utf8', function(error, data) {
 				// todo: handle errors
 				var ev = {
 					type: 'load',

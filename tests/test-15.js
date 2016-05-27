@@ -13,7 +13,7 @@ describe('Loading HTML file', function() {
 	it('on file system', function(done) {
 		
 		Qure
-			.load('../demo/html/index.htm')
+			.load(__dirname +'/../demo/html/index.htm')
 			.then(function(res) {
 				console.log(res);
 			//	if (res.foo() !== 'bar') {
