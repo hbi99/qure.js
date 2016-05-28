@@ -106,16 +106,12 @@
 		call_handler: function(func, worker, qure) {
 			return function() {
 				var args = Array.prototype.slice.call(arguments);
-
 				// add method name
 				args.unshift(func);
-
 				// pause qure instance
 				qure.pause(true);
-
 				// remeber qure instance
 				worker.qure = qure;
-
 				// start worker
 				worker.postMessage(args);
 			};
@@ -201,6 +197,14 @@
 			method = opt.method || 'GET',
 			url = opt.url,
 			params;
+
+		xhr.onreadystatechange = this.readystatechange;
+		xhr.autoParse = this.autoParse;
+		xhr.hash  = hash;
+		xhr.key   = key;
+		xhr.url   = url;
+		xhr.owner = owner;
+
 		if (opt.data) {
 			params = param.parse(opt.data);
 			// append params to url
@@ -214,59 +218,9 @@
 			xhr.open(method, url, true);
 		}
 		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-		xhr.onreadystatechange = this.readystatechange;
-		xhr.autoParse = this.autoParse;
-		xhr.hash  = hash;
-		xhr.key   = key;
-		xhr.url   = url;
-		xhr.owner = owner;
 		xhr.send(params);
 	}
 	CORSreq.prototype = {
-		autoParse: function(url, str) {
-			var ext = url.split('.'),
-				ret,
-				parser;
-			// extract extension
-			ext = ext[ext.length-1];
-			// select available autoparser
-			switch(ext) {
-				case 'css':
-					if (isNode) {
-						ret = str;
-					} else {
-						ret = window.document.createElement('style');
-						ret.innerHTML = str;
-					}
-					break;
-				case 'js':
-					/* jshint ignore:start */
-					eval('(function(window, module) {'+ str +'}).bind({})('+
-							'	typeof window !== "undefined" ? window : {},'+
-							'	typeof module !== "undefined" ? module : {}'+
-							');');
-					/* jshint ignore:end */
-					// transfer exports to return object and clear variable
-					ret = module.exports;
-					delete module.exports;
-					break;
-				case 'json':
-					ret = JSON.parse(str);
-					break;
-				case 'htm':
-				case 'html':
-					parser = new DOMParser();
-					ret = parser.parseFromString(str, "text/html");
-					break;
-			//	case 'xml':
-			//		break;
-			//	case 'xsl':
-			//		break;
-				default:
-					ret = str;
-			}
-			return ret;
-		},
 		readystatechange: function(event) {
 			var req  = event.target,
 				aHash = {},
@@ -274,7 +228,6 @@
 				isDone = true,
 				name,
 				parsed;
-			
 			if (req.status !== 200 || req.readyState !== 4) return;
 			// try the autoparser
 			parsed = this.autoParse(this.url, req.responseText);
@@ -303,6 +256,65 @@
 			}
 			this.owner.queue._paused = false;
 			this.owner.queue.flush.apply(this.owner.queue, args);
+		},
+		autoParse: function(url, str) {
+			var isDeclare = url.slice(-8) === '?declare',
+				ext = url.split('.'),
+				ret,
+				type,
+				parser;
+			// extract extension
+			ext = ext[ext.length-1];
+			// trim ext if 'isDeclare'
+			if (isDeclare) {
+				ext = ext.slice(0,-8);
+			}
+			// select available autoparser
+			switch(ext) {
+				case 'css':
+					if (isNode) {
+						ret = str;
+					} else {
+						ret = window.document.createElement('style');
+						ret.innerHTML = str;
+					}
+					break;
+				case 'js':
+					if (isNode || isDeclare) {
+						/* jshint ignore:start */
+						eval('(function(window, module) {'+ str +'}).bind({})('+
+								'	typeof window !== "undefined" ? window : {},'+
+								'	typeof module !== "undefined" ? module : {}'+
+								');');
+						// transfer exports to return object and clear variable
+						ret = module.exports;
+						delete module.exports;
+						/* jshint ignore:end */
+					} else {
+						ret = document.createElement('script');
+						ret.type = "text/javascript";
+						ret.appendChild(document.createTextNode(str));
+					}
+					break;
+				case 'json':
+					ret = JSON.parse(str);
+					break;
+				case 'htm':
+				case 'html':
+					type = 'text/html';
+				case 'xml':
+				case 'xsl':
+					if (isNode) {
+						ret = str;
+					} else {
+						parser = new DOMParser();
+						ret = parser.parseFromString(str, type || 'text/xml');
+					}
+					break;
+				default:
+					ret = str;
+			}
+			return ret;
 		}
 	};
 
@@ -407,17 +419,17 @@
 		},
 		load: function(opt, hash, key) {
 			var self = this,
+				name,
 				fn = function() {
 					new CORSreq(self, opt, hash, key);
 				};
 			if (!hash && typeof(opt) === 'object') {
-				for (var name in opt) {
+				for (name in opt) {
 					this.load({url: opt[name]}, opt, name);
 				}
 				return this;
 			} else if (!hash) {
-				this.load({_single: opt});
-				return this;
+				return this.load({_single: opt});
 			}
 			fn._paused = true;
 			this.queue.push(fn);
@@ -449,6 +461,7 @@
 			if (typeof(record) === 'string') {
 				var fn = function(d) {
 					self.precede(function() {
+						record += '?declare';
 						self.fork()
 							.load(record)
 							.then(function(d) {
@@ -470,7 +483,6 @@
 				args = Array.prototype.slice.call(arguments),
 				fn = function() {
 					var name = args.shift();
-
 					if (syncFunc[name]) {
 						// this is a sync call
 						syncFunc._globals.qure = self;

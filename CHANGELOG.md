@@ -1,3 +1,9 @@
+<a name="0.2.15"></a>
+## [0.2.15](https://github.com/hbi99/qure.js/compare/0.2.14...v0.2.15) (2016-05-28)
+
+
+
+
 * load and parse HTML file
 * load external javascript
 * auto parse external files
