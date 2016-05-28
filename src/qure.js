@@ -293,9 +293,12 @@
 				case 'json':
 					ret = JSON.parse(str);
 					break;
+				/* falls through */
 				case 'htm':
+				/* falls through */
 				case 'html':
 					type = 'text/html';
+				/* falls through */
 				case 'xml':
 				case 'xsl':
 					if (isNode) {
