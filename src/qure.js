@@ -190,7 +190,8 @@
 		var xhr = new window.XMLHttpRequest(),
 			method = opt.method || 'GET',
 			url = opt.url,
-			params;
+			params,
+			name;
 
 		xhr.onreadystatechange = this.readystatechange;
 		xhr.autoParse = this.autoParse;
@@ -227,16 +228,21 @@
 				args = [],
 				isDone = true,
 				name,
-				parsed;
+				parsed,
+				oRet;
 			if (req.status !== 200 || req.readyState !== 4) return;
 			// try the autoparser
-			parsed = this.autoParse(this.url, req.responseText);
+			parsed = this.autoParse(this.url, req);
+			// prepare return object
+			oRet = {
+				responseText : parsed.responseText,
+				status       : req.status
+			};
+			if (parsed.responseJSON) oRet.responseJSON = parsed.responseJSON;
+			if (parsed.responseXML) oRet.responseXML = parsed.responseXML;
 
 			if (this.hash) {
-				this.hash[this.key] = {
-					responseText: parsed,
-					status: req.status
-				};
+				this.hash[this.key] = oRet;
 				for (name in this.hash) {
 					if (this.hash[name].status !== 200) {
 						isDone = false;
@@ -244,23 +250,22 @@
 				}
 				if (isDone) {
 					for (name in this.hash) {
-						aHash[name] = this.hash[name].responseText;
+						aHash[name] = this.hash[name].responseJSON || this.hash[name].responseXML || this.hash[name].responseText;
 					}
 					args.push(this.hash._single ? this.hash._single.responseText : aHash);
 				}
 			} else {
-				args.push({
-					responseText: parsed,
-					status: req.status
-				});
+				args.push(oRet);
 			}
 			this.owner.queue._paused = false;
 			this.owner.queue.flush.apply(this.owner.queue, args);
 		},
-		autoParse: function(url, str) {
-			var isDeclare = url.slice(-8) === '?declare',
-				ext = url.split('.'),
-				ret,
+		autoParse: function(url, req) {
+			var str       = req.responseText,
+				isDeclare = url.slice(-8) === '?declare',
+				ext       = url.split('.'),
+				ctype     = req.getResponseHeader('Content-Type').match(/.+\/(\w+)?/)[1],
+				ret       = { responseText: str },
 				type,
 				parser;
 			// extract extension
@@ -268,6 +273,8 @@
 			// trim ext if 'isDeclare'
 			if (isDeclare) {
 				ext = ext.slice(0,-8);
+			} else if (url === ext) {
+				ext = ctype;
 			}
 			// select available autoparser
 			switch(ext) {
@@ -297,7 +304,7 @@
 					}
 					break;
 				case 'json':
-					ret = JSON.parse(str);
+					ret.responseJSON = JSON.parse(str);
 					break;
 				/* falls through */
 				case 'htm':
@@ -311,11 +318,10 @@
 						ret = str;
 					} else {
 						parser = new DOMParser();
-						ret = parser.parseFromString(str, type || 'text/xml');
+						ret.responseXML = parser.parseFromString(str, type || 'text/xml');
 					}
 					break;
 				default:
-					ret = str;
 			}
 			return ret;
 		}
@@ -517,7 +523,6 @@
 			return this;
 		}
 	};
-
 
 	if (isNode) {
 		// worker class for node environment
