@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>QureJS - XmlHttpRequest : POST</title>
+<title>QureJS - XmlHttpRequest : GET</title>
 <script type="text/javascript" src="../src/qure.js"></script>
 </head>
 <body>
@@ -11,12 +11,10 @@
 
 Qure
 	.xhr({
-		method : 'POST',
-		url    : 'http://sandbox/node-response/post.php',
-	//	url    : '../demo/test2.json',
-		data   : {
-			'foo': 'bar'
-		}
+		headers : {
+			'Authorization' : 'Bearer xxxx'
+		},
+		url : 'http://sandbox/node-response/get.php',
 	})
 	.then(function(res, xhr) {
 		console.log(res);

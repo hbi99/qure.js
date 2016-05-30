@@ -211,7 +211,13 @@
 			// allways async request
 			xhr.open(method, url, true);
 		}
-		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		if (opt.headers) {
+			for (name in opt.headers) {
+				xhr.setRequestHeader(name, opt.headers[name]);
+			}
+		} else {
+			xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		}
 		xhr.send(params);
 	}
 	CORSreq.prototype = {
