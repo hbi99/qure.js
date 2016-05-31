@@ -92,6 +92,7 @@ XMLHttpRequest.prototype = {
 				// set state to 'done'
 				self.readyState = 4;
 				self.status = 200;
+				self.headers = this.headers;
 				self.responseText = str;
 				if (self.onreadystatechange) self.onreadystatechange(ev);
 			});
@@ -101,6 +102,7 @@ XMLHttpRequest.prototype = {
 			// set state to 'done'
 			self.readyState = 4;
 			self.status = 0;
+			self.headers = this.headers;
 			self.statusText = err.stack;
 			self.responseText = err.message;
 			if (self.onreadystatechange) self.onreadystatechange(ev);
@@ -109,6 +111,12 @@ XMLHttpRequest.prototype = {
 		// write data to request body
 		request.write(data || '');
 		request.end();
+	},
+	getResponseHeader: function(name) {
+		return this.headers[name] || this.headers[name.toLowerCase()];
+	},
+	getAllResponseHeaders: function() {
+		return this.headers;
 	},
 	getRequestHeader: function(name) {
 		return settings.headers[name];
