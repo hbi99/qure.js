@@ -32,7 +32,7 @@ var banner   = ['/*',
 // help instructions
 gulp.task('help', function() {
 	console.log('  gulp tests'.cyan +   '\t\tRun all tests'.grey);
-	console.log('  gulp tests --file 01'.cyan + '\tRun specific file'.grey);
+	console.log('  gulp test --file 01'.cyan + '\tRun specific file'.grey);
 	console.log('  gulp hint'.cyan +    '\t\tJSHint source files'.grey);
 	console.log('  gulp minify'.cyan +  '\t\tMinify and JSHint files'.grey);
 	console.log('  gulp commit'.cyan +  '\t\tCommit and bump version'.grey);
@@ -46,9 +46,15 @@ gulp.task('help', function() {
     gulp tests --file 01
  */
 gulp.task('tests', function() {
+	return gulp.src(TESTS, {read: false})
+				.pipe($.mocha({reporter: 'list'}));
+});
+
+
+gulp.task('test', function() {
 	var nr = process.argv.slice(2)[2],
-		src = nr ? 'tests/test-'+ nr +'.js' : TESTS;
-	return gulp.src(src, {read: false})
+		src = nr.match(/\d\d/) === null ? nr : 'test-'+ nr ;
+	return gulp.src('tests/'+ src +'.js', {read: false})
 				.pipe($.mocha({reporter: 'list'}));
 });
 
