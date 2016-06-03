@@ -7,6 +7,9 @@
     "email": "hbi@longscript.com",
     "url": "https://github.com/hbi99"
   },
+  "bin": {
+    "qure": "bin/qure.js"
+  },
   "homepage": "https://github.com/hbi99/qure.js",
   "main": "./dist/qure.js",
   "keywords": [
@@ -44,6 +47,7 @@
     "jshint-stylish": "^2.0.1",
     "mysql": "^2.9.0",
     "qure-fs": "^1.0.2",
+    "qure-less": "^1.0.0",
     "qure-mysql": "^1.0.2",
     "run-sequence": "^1.1.4"
   }
