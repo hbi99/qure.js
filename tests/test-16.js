@@ -5,23 +5,20 @@
 
 var Qure = require('../src/qure.js');
 
-describe('Loading HTML file', function() {
+describe('Trying out', function() {
 
 	/* 
 	 * 
 	 */
-	it('on file system', function(done) {
+	it('simple sequence', function(done) {
 		
 		Qure
-			.load(__dirname +'/../demo/html/index.htm')
-			.then(function(res) {
-				console.log(res);
-			//	if (res.foo() !== 'bar') {
-			//		console.log( '\tUnexpected value!' );
-			//	}
-				done();
+			.sequence('test', function() {
+				console.log(this);
 			});
 		
+		done();
+
 	});
 
 });

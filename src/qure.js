@@ -14,6 +14,7 @@
 		};
 
 	var workFunc = {};
+	var seqFunc = {};
 
 	// queuing mechanism
 	function Queue(owner, that) {
@@ -496,6 +497,11 @@
 						// this is a sync call
 						syncFunc._globals.qure = self;
 						syncFunc._globals.res = syncFunc[name].apply(syncFunc, args);
+					} else if (seqFunc[name]) {
+						var temp = seqFunc[name].queue._methods.slice(0);
+						//console.log(temp[0].toString());
+						seqFunc[name].resume(args);
+						seqFunc[name].queue._methods = temp;
 					} else {
 						// pause queue execution
 						self.pause(true);
@@ -520,6 +526,17 @@
 			fn._paused = true;
 			if (precede) this.queue.unshift(fn);
 			else this.queue.push(fn);
+			return this;
+		},
+		sequence: function(name, fn) {
+			var that = this.fork().pause(),
+				func = function(args) {
+					fn.apply(that, args);
+				};
+
+			that.queue._methods = [func];
+			seqFunc[name] = that;
+
 			return this;
 		}
 	};
