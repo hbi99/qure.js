@@ -533,10 +533,10 @@
 				func = function(args) {
 					fn.apply(that, args);
 				};
-
+			// add queue
 			that.queue._methods = [func];
+			// save reference to sequence
 			seqFunc[name] = that;
-
 			return this;
 		}
 	};
