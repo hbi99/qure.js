@@ -10,18 +10,24 @@
 <script type="text/javascript">
 
 Qure
-	.sequence('test', function(arg) {
+	.sequence('test1', function(arg) {
 		
-		this.fork()
-			.wait(arg * 1000)
+		this.wait(500)
+			.then(function() {
+				console.log(arg);
+			});
+
+	})
+	.sequence('test2', function(arg) {
+		this.wait(1000)
 			.then(function() {
 				console.log(arg);
 			});
 
 	});
 
-Qure.run('test', 3);
-Qure.run('test', 2);
+Qure.run('test1', 5);
+Qure.run('test2', 10);
 
 </script>
 

@@ -498,10 +498,10 @@
 						syncFunc._globals.qure = self;
 						syncFunc._globals.res = syncFunc[name].apply(syncFunc, args);
 					} else if (seqFunc[name]) {
-						var temp = seqFunc[name].queue._methods.slice(0);
-						//console.log(temp[0].toString());
-						seqFunc[name].resume(args);
-						seqFunc[name].queue._methods = temp;
+						var that = seqFunc[name],
+							methods = that.queue._methods.slice(0);
+						that.resume(args);
+						that.queue._methods = methods;
 					} else {
 						// pause queue execution
 						self.pause(true);
@@ -529,9 +529,9 @@
 			return this;
 		},
 		sequence: function(name, fn) {
-			var that = this.fork().pause(),
+			var that = this.fork(),
 				func = function(args) {
-					fn.apply(that, args);
+					fn.apply(that.fork(), args);
 				};
 			// add queue
 			that.queue._methods = [func];
