@@ -10,14 +10,29 @@ describe('Trying out', function() {
 	/* 
 	 * 
 	 */
-	it('simple sequence', function(done) {
+	it('sequence', function(done) {
 		
 		Qure
-			.sequence('test', function() {
-				console.log(this);
+			.sequence('test1', function(arg) {
+				
+				this.wait(500)
+					.then(function() {
+						console.log(arg);
+					});
+
+			})
+			.sequence('test2', function(arg) {
+				
+				this.wait(1000)
+					.then(function() {
+						console.log(arg);
+						done();
+					});
+
 			});
-		
-		done();
+
+		Qure.run('test1', 5);
+		Qure.run('test2', 10);
 
 	});
 
