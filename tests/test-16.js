@@ -15,6 +15,7 @@ describe('Trying out', function() {
 		Qure
 			.sequence('test1', function(arg) {
 				
+				// notice that "this" context is "Qure"
 				this.wait(500)
 					.then(function() {
 						console.log(arg);
@@ -23,6 +24,7 @@ describe('Trying out', function() {
 			})
 			.sequence('test2', function(arg) {
 				
+				// notice that "this" context is "Qure"
 				this.wait(1000)
 					.then(function() {
 						console.log(arg);
