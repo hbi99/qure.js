@@ -265,7 +265,7 @@
 			var str       = req.responseText,
 				isDeclare = url.slice(-8) === '?declare',
 				ext       = url.split('.'),
-				ctype     = req.getResponseHeader('Content-Type').match(/.+\/(\w+)?/)[1],
+				ctype     = req.headers ? req.getResponseHeader('Content-Type').match(/.+\/(\w+)?/)[1] : ext[ext.length-1],
 				ret       = { responseText: str },
 				type,
 				parser;
