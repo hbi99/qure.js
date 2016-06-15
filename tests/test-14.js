@@ -3,7 +3,7 @@
  * 
  */
 
-var Qure = require('../src/qure.js');
+var qure = require('../src/qure.js');
 
 describe('Loading external javascript resource', function() {
 
@@ -12,12 +12,10 @@ describe('Loading external javascript resource', function() {
 	 */
 	it('on file system', function(done) {
 		
-		Qure
+		qure
 			.load(__dirname +'/../demo/js/test2.js')
 			.then(function(res) {
-				if (res.foo() !== 'bar') {
-					console.log( '\tUnexpected value!' );
-				}
+				console.log(res);
 				done();
 			});
 		

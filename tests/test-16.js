@@ -3,7 +3,7 @@
  * 
  */
 
-var Qure = require('../src/qure.js');
+var qure = require('../src/qure.js');
 
 describe('Trying out', function() {
 
@@ -12,7 +12,7 @@ describe('Trying out', function() {
 	 */
 	it('sequence', function(done) {
 		
-		Qure
+		qure
 			.sequence('test1', function(arg) {
 				
 				// notice that "this" context is "Qure"
@@ -33,8 +33,8 @@ describe('Trying out', function() {
 
 			});
 
-		Qure.run('test1', 5);
-		Qure.run('test2', 10);
+		qure.run('test1', 5);
+		qure.run('test2', 10);
 
 	});
 

@@ -3,7 +3,7 @@
  * 
  */
 
-var Qure = require('../src/qure.js'),
+var qure = require('../src/qure.js'),
 	qureMysql = require('qure-mysql');
 
 describe('Testing threaded database with external module', function() {
@@ -13,7 +13,7 @@ describe('Testing threaded database with external module', function() {
 	 */
 	it('on file system', function(done) {
 		
-		Qure
+		qure
 			.declare(qureMysql)
 			.run('settings', {
 				host:     'localhost',

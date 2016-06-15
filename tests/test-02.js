@@ -3,7 +3,7 @@
  *  
  */
 
-var Qure = require('../src/qure.js');
+var qure = require('../src/qure.js');
 
 describe('Testing I/O blocking recursion', function() {
 
@@ -12,7 +12,7 @@ describe('Testing I/O blocking recursion', function() {
 	 */
 	it('with fibonacci numbers', function(done) {
 		
-		Qure
+		qure
 			.declare({
 				// declare type (omitted or false = not threaded)
 				workers: false,

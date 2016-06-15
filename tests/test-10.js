@@ -3,7 +3,7 @@
  * 
  */
 
-var Qure = require('../src/qure.js');
+var qure = require('../src/qure.js');
 
 describe('Testing XHR, with GET method', function() {
 
@@ -12,7 +12,7 @@ describe('Testing XHR, with GET method', function() {
 	 */
 	it('on file system', function(done) {
 		
-		Qure
+		qure
 			.xhr({
 				url  : 'http://sandbox/node-response/get.php',
 				data : {

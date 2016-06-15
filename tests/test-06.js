@@ -3,7 +3,7 @@
  * 
  */
 
-var Qure = require('../src/qure.js'),
+var qure = require('../src/qure.js'),
 	qureFs = require('qure-fs');
 
 describe('Testing threaded recursion with external module', function() {
@@ -13,7 +13,7 @@ describe('Testing threaded recursion with external module', function() {
 	 */
 	it('on file system', function(done) {
 		
-		Qure
+		qure
 			.declare(qureFs)
 			.run('readdir', __dirname +'/../demo')
 			.then(function(res) {

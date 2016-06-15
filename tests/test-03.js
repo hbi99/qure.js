@@ -3,7 +3,7 @@
  *  
  */
 
-var Qure = require('../src/qure.js');
+var qure = require('../src/qure.js');
 
 describe('Testing threaded recursion', function() {
 
@@ -15,7 +15,7 @@ describe('Testing threaded recursion', function() {
 		// extend test timeout to 15 seconds
 		this.timeout(15000);
 		
-		Qure
+		qure
 			.declare({
 				// declare type (omitted or false = not threaded)
 				workers: true,

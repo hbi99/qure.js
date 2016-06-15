@@ -15,7 +15,7 @@ var gulp                       = require('gulp'),
 var DATE  = new Date(),
 	SRC   = 'src/qure.js',
 	DEST  = 'dist/',
-	TESTS = 'tests/*',
+	TESTS = 'tests/*.js',
 	HINTS = ['./src/*', './tests/*'],
 	PKG   = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 

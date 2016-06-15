@@ -3,7 +3,7 @@
  * 
  */
 
-var Qure = require('../src/qure.js');
+var qure = require('../src/qure.js');
 
 describe('Testing threaded database with external module', function() {
 
@@ -12,7 +12,7 @@ describe('Testing threaded database with external module', function() {
 	 */
 	it('with query', function(done) {
 		
-		Qure
+		qure
 			.declare({
 				settings: function(conn) {
 					this.conn = conn;

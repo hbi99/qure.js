@@ -3,7 +3,7 @@
  * 
  */
 
-var Qure = require('../src/qure.js');
+var qure = require('../src/qure.js');
 
 describe('Testing threaded recursion', function() {
 
@@ -12,7 +12,7 @@ describe('Testing threaded recursion', function() {
 	 */
 	it('on filesystem', function(done) {
 		
-		Qure
+		qure
 			.declare({
 				// declare type (omitted or false = not threaded)
 				workers: true,

@@ -3,7 +3,7 @@
  * 
  */
 
-var Qure = require('../src/qure.js');
+var qure = require('../src/qure.js');
 
 describe('Trying out', function() {
 
@@ -12,7 +12,7 @@ describe('Trying out', function() {
 	 */
 	it('rendering less file', function(done) {
 		
-		Qure
+		qure
 			.declare({
 				render: function(options) {
 					console.log(options);
@@ -24,7 +24,7 @@ describe('Trying out', function() {
 			})
 			.then(function(data) {
 				console.log(data);
-				
+
 				done();
 			});
 

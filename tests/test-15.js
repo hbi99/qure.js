@@ -3,7 +3,7 @@
  * 
  */
 
-var Qure = require('../src/qure.js');
+var qure = require('../src/qure.js');
 
 describe('Loading HTML file', function() {
 
@@ -12,7 +12,7 @@ describe('Loading HTML file', function() {
 	 */
 	it('on file system', function(done) {
 		
-		Qure
+		qure
 			.load(__dirname +'/../demo/html/index.htm')
 			.then(function(res) {
 				console.log(res);
