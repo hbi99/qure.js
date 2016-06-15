@@ -234,6 +234,7 @@
 			if (req.status !== 200 || req.readyState !== 4) return;
 			// try the autoparser
 			parsed = this.autoParse(this.url, req);
+
 			// prepare return object
 			oRet = {
 				responseText : parsed.responseText,
@@ -253,7 +254,8 @@
 					for (name in this.hash) {
 						aHash[name] = this.hash[name].responseJSON || this.hash[name].responseXML || this.hash[name].responseText;
 					}
-					args.push(this.hash._single ? this.hash._single.responseText : aHash);
+					if (req.url.slice(-8) === '?declare') args.push(parsed);
+					else args.push(this.hash._single ? this.hash._single.responseText : aHash);
 				}
 			} else {
 				args.push(oRet);
@@ -265,10 +267,11 @@
 			var str       = req.responseText,
 				isDeclare = url.slice(-8) === '?declare',
 				ext       = url.split('.'),
-				ctype     = req.getResponseHeader('Content-Type').match(/.+\/(\w+)?/)[1],
+				ctype     = req.getResponseHeader('Content-Type'),
 				ret       = { responseText: str },
 				type,
 				parser;
+			ctype = (ctype !== null) ? ctype.match(/.+\/(\w+)?/)[1] : false;
 			// extract extension
 			ext = ext[ext.length-1];
 			// trim ext if 'isDeclare'
