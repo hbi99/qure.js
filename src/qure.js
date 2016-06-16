@@ -253,7 +253,8 @@
 					for (name in this.hash) {
 						aHash[name] = this.hash[name].responseJSON || this.hash[name].responseXML || this.hash[name].responseText;
 					}
-					args.push(this.hash._single ? this.hash._single.responseText : aHash);
+					if (!oRet.responseText) args.push(parsed);
+					else args.push(this.hash._single ? this.hash._single.responseText : aHash);
 				}
 			} else {
 				args.push(oRet);
