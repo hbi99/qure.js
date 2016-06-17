@@ -30,7 +30,7 @@
 		},
 		unshift: function(fn) {
 			this._methods.unshift(fn);
-			if (!this._paused) this.flush();
+			if (!this._paused && !fn._paused) this.flush();
 		},
 		flush: function() {
 			var fn,
