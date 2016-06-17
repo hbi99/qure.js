@@ -1,5 +1,5 @@
 /*
- * qure.js [v0.2.15]
+ * qure.js [v0.2.16]
  * https://github.com/hbi99/qure.js 
  * Copyright (c) 2013-2016, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
@@ -20,6 +20,7 @@
 		};
 
 	var workFunc = {};
+	var seqFunc = {};
 
 	// queuing mechanism
 	function Queue(owner, that) {
@@ -153,7 +154,7 @@
 						val = prop.toString();
 						val = 'new RegExp("'+ val.slice(1, val.lastIndexOf('/')) +'", "'+ val.slice(val.lastIndexOf('/')+1) +'")';
 						break;
-					case Function: val = prop.toString().replace(/\bself\b/g, 'this.'+ key); break;
+					case Function: val = prop.toString().replace(/^(?!var)\bself\b/g, 'this.'+ key); break;
 					default: val = prop;
 				}
 				if (isArray) hash.push(val);
@@ -196,7 +197,8 @@
 		var xhr = new window.XMLHttpRequest(),
 			method = opt.method || 'GET',
 			url = opt.url,
-			params;
+			params,
+			name;
 
 		xhr.onreadystatechange = this.readystatechange;
 		xhr.autoParse = this.autoParse;
@@ -217,7 +219,13 @@
 			// allways async request
 			xhr.open(method, url, true);
 		}
-		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		if (opt.headers) {
+			for (name in opt.headers) {
+				xhr.setRequestHeader(name, opt.headers[name]);
+			}
+		} else {
+			xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		}
 		xhr.send(params);
 	}
 	CORSreq.prototype = {
@@ -227,16 +235,21 @@
 				args = [],
 				isDone = true,
 				name,
-				parsed;
+				parsed,
+				oRet;
 			if (req.status !== 200 || req.readyState !== 4) return;
 			// try the autoparser
-			parsed = this.autoParse(this.url, req.responseText);
+			parsed = this.autoParse(this.url, req);
+			// prepare return object
+			oRet = {
+				responseText : parsed.responseText,
+				status       : req.status
+			};
+			if (parsed.responseJSON) oRet.responseJSON = parsed.responseJSON;
+			if (parsed.responseXML) oRet.responseXML = parsed.responseXML;
 
 			if (this.hash) {
-				this.hash[this.key] = {
-					responseText: parsed,
-					status: req.status
-				};
+				this.hash[this.key] = oRet;
 				for (name in this.hash) {
 					if (this.hash[name].status !== 200) {
 						isDone = false;
@@ -244,23 +257,23 @@
 				}
 				if (isDone) {
 					for (name in this.hash) {
-						aHash[name] = this.hash[name].responseText;
+						aHash[name] = this.hash[name].responseJSON || this.hash[name].responseXML || this.hash[name].responseText;
 					}
-					args.push(this.hash._single ? this.hash._single.responseText : aHash);
+					if (!oRet.responseText) args.push(parsed);
+					else args.push(this.hash._single ? this.hash._single.responseText : aHash);
 				}
 			} else {
-				args.push({
-					responseText: parsed,
-					status: req.status
-				});
+				args.push(oRet);
 			}
 			this.owner.queue._paused = false;
 			this.owner.queue.flush.apply(this.owner.queue, args);
 		},
-		autoParse: function(url, str) {
-			var isDeclare = url.slice(-8) === '?declare',
-				ext = url.split('.'),
-				ret,
+		autoParse: function(url, req) {
+			var str       = req.responseText,
+				isDeclare = url.slice(-8) === '?declare',
+				ext       = url.split('.'),
+				ctype     = req.headers ? req.getResponseHeader('Content-Type').match(/.+\/(\w+)?/)[1] : ext[ext.length-1],
+				ret       = { responseText: str },
 				type,
 				parser;
 			// extract extension
@@ -268,6 +281,8 @@
 			// trim ext if 'isDeclare'
 			if (isDeclare) {
 				ext = ext.slice(0,-8);
+			} else if (url === ext) {
+				ext = ctype;
 			}
 			// select available autoparser
 			switch(ext) {
@@ -297,7 +312,7 @@
 					}
 					break;
 				case 'json':
-					ret = JSON.parse(str);
+					ret.responseJSON = JSON.parse(str);
 					break;
 				/* falls through */
 				case 'htm':
@@ -311,11 +326,10 @@
 						ret = str;
 					} else {
 						parser = new DOMParser();
-						ret = parser.parseFromString(str, type || 'text/xml');
+						ret.responseXML = parser.parseFromString(str, type || 'text/xml');
 					}
 					break;
 				default:
-					ret = str;
 			}
 			return ret;
 		}
@@ -490,6 +504,11 @@
 						// this is a sync call
 						syncFunc._globals.qure = self;
 						syncFunc._globals.res = syncFunc[name].apply(syncFunc, args);
+					} else if (seqFunc[name]) {
+						var that = seqFunc[name],
+							methods = that.queue._methods.slice(0);
+						that.resume(args);
+						that.queue._methods = methods;
 					} else {
 						// pause queue execution
 						self.pause(true);
@@ -515,9 +534,19 @@
 			if (precede) this.queue.unshift(fn);
 			else this.queue.push(fn);
 			return this;
+		},
+		sequence: function(name, fn) {
+			var that = this.fork(),
+				func = function(args) {
+					fn.apply(that.fork(), args);
+				};
+			// add queue
+			that.queue._methods = [func];
+			// save reference to sequence
+			seqFunc[name] = that;
+			return this;
 		}
 	};
-
 
 	if (isNode) {
 		// worker class for node environment

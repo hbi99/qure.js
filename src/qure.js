@@ -148,7 +148,7 @@
 						val = prop.toString();
 						val = 'new RegExp("'+ val.slice(1, val.lastIndexOf('/')) +'", "'+ val.slice(val.lastIndexOf('/')+1) +'")';
 						break;
-					case Function: val = prop.toString().replace(/\bself\b/g, 'this.'+ key); break;
+					case Function: val = prop.toString().replace(/^(?!var)\bself\b/g, 'this.'+ key); break;
 					default: val = prop;
 				}
 				if (isArray) hash.push(val);
@@ -168,13 +168,13 @@
 			args = str.match(/functio.+?\((.*?)\)/)[1].split(',');
 			body = str.match(/functio.+?\{([\s\S]*)\}/i)[1].trim();
 			// modify function body
-			body = body.replace(/\bself\b/g,    'this.'+ name);
-			body = body.replace(/\brequire\b/g, 'this._globals.require');
-			body = body.replace(/\bmodule\b/g,  'this._globals.module');
+			body = body.replace(/^(?!var)\bself\b/g, 'this.'+ name);
+			body = body.replace(/\brequire\b/g,      'this._globals.require');
+			body = body.replace(/\bmodule\b/g,       'this._globals.module');
 			// shortcut to qure functions
-			body = body.replace(/\.pause\(/g,   '._globals.qure.pause(');
-			body = body.replace(/\.resume\(/g,  '._globals.qure.resume(');
-			body = body.replace(/\.precede\(/g, '._globals.qure.precede(');
+			body = body.replace(/\.pause\(/g,        '._globals.qure.pause(');
+			body = body.replace(/\.resume\(/g,       '._globals.qure.resume(');
+			body = body.replace(/\.precede\(/g,      '._globals.qure.precede(');
 			//body = body.replace(/\.then\(/g,    '._globals.qure.then(');
 			// run, fork, require, declare, wait
 			//console.log( body );
