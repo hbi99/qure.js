@@ -3,24 +3,20 @@
  * 
  */
 
-var qure = require('../src/qure.js');
+var qure = require('../src/qure.js'),
+	qureWatch = require('qure-watch');
 
 describe('Trying out', function() {
 
 	/* 
 	 * 
 	 */
-	it('rendering less file', function(done) {
+	it('watching less file', function(done) {
 		
 		qure
-			.declare({
-				render: function(options) {
-					console.log(options);
-				}
-			})
-			.run('render', {
-				source: '../demo/css/*.less',
-				compress: false
+			.declare(qureWatch)
+			.run('watch', {
+				source: '../demo/css/*.less'
 			})
 			.then(function(data) {
 				console.log(data);
