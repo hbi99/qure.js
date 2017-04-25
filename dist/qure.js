@@ -1,7 +1,7 @@
 /*
  * qure.js [v0.2.16]
  * https://github.com/hbi99/qure.js 
- * Copyright (c) 2013-2016, Hakan Bilgin <hbi@longscript.com> 
+ * Copyright (c) 2013-2017, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
  */
 
@@ -36,7 +36,7 @@
 		},
 		unshift: function(fn) {
 			this._methods.unshift(fn);
-			if (!this._paused) this.flush();
+			if (!this._paused && !fn._paused) this.flush();
 		},
 		flush: function() {
 			var fn,
@@ -550,8 +550,8 @@
 
 	if (isNode) {
 		// worker class for node environment
-		window.Worker = require('./worker');
-		window.XMLHttpRequest = require('./xhr');
+		window.Worker = require('./../src/worker');
+		window.XMLHttpRequest = require('./../src/xhr');
 	}
 
 	// Export

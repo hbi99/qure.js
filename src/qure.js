@@ -544,8 +544,8 @@
 
 	if (isNode) {
 		// worker class for node environment
-		window.Worker = require('./worker');
-		window.XMLHttpRequest = require('./xhr');
+		window.Worker = require('./../src/worker');
+		window.XMLHttpRequest = require('./../src/xhr');
 	}
 
 	// Export

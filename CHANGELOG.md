@@ -1,3 +1,9 @@
+<a name="0.2.17"></a>
+## [0.2.17](https://github.com/hbi99/qure.js/compare/0.2.16...v0.2.17) (2017-04-25)
+
+
+
+
 <a name="0.2.16"></a>
 ## [0.2.16](https://github.com/hbi99/qure.js/compare/0.2.15...v0.2.16) (2016-05-28)
 
