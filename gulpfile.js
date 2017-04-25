@@ -137,7 +137,7 @@ gulp.task('commit', function(callback) {
 
 
 gulp.task('release', function(callback) {
-	runSequence('minify', 'bump-version', 'changelog', 'commit-changes', 'push-changes', 'create-new-tag', 'github-release',
+	runSequence('minify', 'bump-version', 'changelog', 'commit-changes', 'push-changes', 'create-new-tag',
 		function(error) {
 			if (error) console.log(error.message);
 			else console.log('RELEASE FINISHED SUCCESSFULLY');
