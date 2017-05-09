@@ -40,7 +40,7 @@ describe('Testing threaded recursion', function() {
 					var that = this,
 						results = [],
 						fs = this.fs,
-						sep = '/';
+						sep = path.delimiter;
 					fs.readdir(path, function(err, list) {
 						if (err) return callback(err);
 						var pending = list.length;
