@@ -39,14 +39,13 @@ describe('Testing threaded recursion', function() {
 				walk: function(path, callback, level) {
 					var that = this,
 						results = [],
-						fs = this.fs,
-						sep = path.delimiter;
+						fs = this.fs;
 					fs.readdir(path, function(err, list) {
 						if (err) return callback(err);
 						var pending = list.length;
 						if (!pending) return callback(null, results);
 						list.forEach(function(file) {
-							file = path + sep + file;
+							file = that.path.join(path, file);
 							fs.stat(file, function(err, stat) {
 								if (stat && stat.isDirectory()) {
 									results.push(file);
