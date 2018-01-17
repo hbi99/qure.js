@@ -1,5 +1,5 @@
 /*
- * qure.js [v0.2.20]
+ * qure.js [v0.2.22]
  * https://github.com/hbi99/qure.js 
  * Copyright (c) 2013-2018, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
@@ -120,6 +120,7 @@
 		compile: function(record, qure) {
 			var worker = this.setup(record),
 				fn;
+
 			// create return object
 			for (fn in record) {
 				workFunc[fn] = this.call_handler(fn, worker, qure);
@@ -528,6 +529,7 @@
 		},
 		resume: function() {
 			this.queue._paused = false;
+			this.queue._methods.shift();
 			this.queue.flush.apply(this.queue, arguments);
 			return this;
 		},

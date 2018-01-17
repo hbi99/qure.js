@@ -114,6 +114,7 @@
 		compile: function(record, qure) {
 			var worker = this.setup(record),
 				fn;
+
 			// create return object
 			for (fn in record) {
 				workFunc[fn] = this.call_handler(fn, worker, qure);
@@ -522,6 +523,7 @@
 		},
 		resume: function() {
 			this.queue._paused = false;
+			this.queue._methods.shift();
 			this.queue.flush.apply(this.queue, arguments);
 			return this;
 		},

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>QureJS - Recursion</title>
-<script type="text/javascript" src="../dist/qure.js"></script>
+<script type="text/javascript" src="../src/qure.js"></script>
 </head>
 <body>
 
@@ -16,11 +16,11 @@ Qure
 		workers: true,
 		// fibonacci numbers
 		fibonacci: function(n) {
-			return (n < 2) ? 1 : self(n-2) + self(n-1);
+			return (n < 2) ? 1 : this.fibonacci(n-2) + this.fibonacci(n-1);
 		},
 		// factorial numbers
 		factorial: function(n) {
-			return (n <= 0) ? 1 : (n * self(n - 1));
+			return (n <= 0) ? 1 : (n * this.factorial(n - 1));
 		},
 		// calling sibling function using 'this'
 		foo: function(n) {

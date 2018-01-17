@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>QureJS - Sync recursion call</title>
-<script type="text/javascript" src="../dist/qure.js"></script>
+<script type="text/javascript" src="../src/qure.js"></script>
 </head>
 <body>
 
@@ -13,7 +13,7 @@ Qure
 	.declare({
 		// fibonacci numbers
 		fibonacci: function(n) {
-			return (n < 2) ? 1 : self(n-2) + self(n-1);
+			return (n < 2) ? 1 : this.fibonacci(n-2) + this.fibonacci(n-1);
 		},
 		// call sibling function
 		bar: function() {
