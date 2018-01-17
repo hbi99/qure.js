@@ -523,7 +523,9 @@
 		},
 		resume: function() {
 			this.queue._paused = false;
-			this.queue._methods.shift();
+			if (this.queue._methods[0]._paused && this.queue._methods[0].toString() === 'function () {}') {
+				this.queue._methods.shift();
+			}
 			this.queue.flush.apply(this.queue, arguments);
 			return this;
 		},

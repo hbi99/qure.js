@@ -1,5 +1,5 @@
 /*
- * qure.js [v0.2.22]
+ * qure.js [v0.2.23]
  * https://github.com/hbi99/qure.js 
  * Copyright (c) 2013-2018, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
@@ -529,7 +529,9 @@
 		},
 		resume: function() {
 			this.queue._paused = false;
-			this.queue._methods.shift();
+			if (this.queue._methods[0]._paused && this.queue._methods[0].toString() === 'function () {}') {
+				this.queue._methods.shift();
+			}
 			this.queue.flush.apply(this.queue, arguments);
 			return this;
 		},
