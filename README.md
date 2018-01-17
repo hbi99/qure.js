@@ -1,4 +1,8 @@
 # QureJS
+For examples in browser, check out [these demo files](https://github.com/hbi99/qure.js/tree/master/demo)
+
+Node examples can be [found here](https://github.com/hbi99/qure.js/tree/master/tests)
+
 Tiny javascript library, enabling codeflow like this
 
 ```js
