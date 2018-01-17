@@ -510,6 +510,9 @@
 						workFunc[name].apply(workFunc, args);
 					}
 				};
+			if (typeof args[0] === 'function') {
+				return this.then.apply(self, args);
+			}
 			this.queue.push(fn);
 			return this;
 		},

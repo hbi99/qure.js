@@ -1,7 +1,7 @@
 /*
- * qure.js [v0.2.16]
+ * qure.js [v0.2.20]
  * https://github.com/hbi99/qure.js 
- * Copyright (c) 2013-2017, Hakan Bilgin <hbi@longscript.com> 
+ * Copyright (c) 2013-2018, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
  */
 
@@ -516,6 +516,9 @@
 						workFunc[name].apply(workFunc, args);
 					}
 				};
+			if (typeof args[0] === 'function') {
+				return this.then.apply(self, args);
+			}
 			this.queue.push(fn);
 			return this;
 		},

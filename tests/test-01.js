@@ -13,6 +13,9 @@ describe('Simple test of the methods "wait" and "then"', function() {
 	it('should work fine', function(done) {
 		
 		qure
+			.run(function() {
+				console.log(1);
+			})
 			.wait(100)
 			.then(function() {
 				done();
