@@ -3,15 +3,14 @@ Tiny javascript library, enabling codeflow like this
 
 ```js
 Qure
-    .wait(1000)
-    .then(function() {
-        // executed after 1000 milliseconds
-        console.log(1);
+    .run(function() {
+        // save variable to "this"
+        this.a = 1;
     })
     .wait(500)
     .then(function() {
         // executed after 500 milliseconds after previous call
-        console.log(2);
+        console.log(this.a); // '1'
     })
 
 ```
