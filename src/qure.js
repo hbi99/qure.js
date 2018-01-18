@@ -1,3 +1,9 @@
+/*
+ * qure.js [v0.2.23]
+ * https://github.com/hbi99/qure.js 
+ * Copyright (c) 2013-2018, Hakan Bilgin <hbi@longscript.com> 
+ * Licensed under the MIT License
+ */
 
 (function(window, module) {
 	'use strict';
@@ -36,7 +42,7 @@
 			var fn,
 				args = arguments;
 			if (this._paused) return;
-			while (this._methods[0]) {
+			while (this._methods.length) {
 				fn = this._methods.shift();
 				fn.apply(this._that, args);
 				if (fn._paused) {
@@ -522,11 +528,13 @@
 			return this;
 		},
 		resume: function() {
+			var args = Array.prototype.slice.call(arguments),
+				next_fn = this.queue._methods[0];
 			this.queue._paused = false;
-			if (this.queue._methods[0]._paused && this.queue._methods[0].toString() === 'function () {}') {
+			if (next_fn && next_fn._paused && next_fn.toString() === 'function () {}') {
 				this.queue._methods.shift();
 			}
-			this.queue.flush.apply(this.queue, arguments);
+			this.queue.flush.apply(this.queue, args);
 			return this;
 		},
 		pause: function(precede) {
