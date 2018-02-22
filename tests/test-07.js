@@ -30,7 +30,7 @@ describe('Testing threaded database with external module', function() {
 					var that = this;
 
 					// pause the queue
-					this.pause();
+					this.pause(true);
 
 					// open database connection
 					this.open();
@@ -43,7 +43,7 @@ describe('Testing threaded database with external module', function() {
 						that.conn.end();
 
 						// resume queue
-						that.resume(rows);
+						that.resume(rows[0]);
 					});
 				}
 			})
@@ -53,9 +53,9 @@ describe('Testing threaded database with external module', function() {
 				password: 'secret',
 				database: 'my_db'
 			})
-			.run('query', 'SELECT 1 + 1 AS solution')
+			.run('query', 'SELECT 1 + 1 AS solution;')
 			.then(function(rows) {
-				console.log('The solution is: ', rows[0].solution);
+				console.log('The solution is: ', rows.solution);
 				done();
 			});
 		

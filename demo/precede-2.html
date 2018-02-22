@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>QureJS - Resume / Pause / Precede</title>
+<script type="text/javascript" src="../src/qure.js"></script>
+</head>
+<body>
+
+<button onclick="resume_qure();">Resume</button>
+
+<script type="text/javascript">
+
+var loop = [
+	"SELECT 1 + 1 AS solution;",
+	"SELECT 2 + 2 AS solution;"
+];
+
+var qure = Qure
+		.declare({
+			exec_all: function(queries) {
+				var that = this,
+					len = queries.length;
+
+				// pause the queue
+				that.pause(true);
+
+				while (len--) {
+					(function(qry) {
+						that.precede(function() {
+							console.log( qry );
+						});
+					})(queries[len]);
+				}
+
+				// pause the queue
+				this.resume();
+			}
+		})
+		.then(function() {
+			console.log(1);
+		})
+		.run('exec_all', loop)
+		.then(function() {
+			console.log('done');
+		});
+
+function resume_qure() {
+	// resume execution
+	qure.resume();
+}
+
+</script>
+
+</body>
+</html>

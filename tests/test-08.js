@@ -21,9 +21,9 @@ describe('Testing threaded database with external module', function() {
 				password: 'secret',
 				database: 'my_db'
 			})
-			.run('query', 'SELECT 1 + 1 AS solution')
+			.run('query', 'SELECT 1 + 1 AS solution;')
 			.then(function(rows) {
-				console.log('The solution is: ', rows[0].solution);
+				console.log('The solution is: ', rows.solution);
 				done();
 			});
 		
