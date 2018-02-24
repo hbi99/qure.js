@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>QureJS - External javascript</title>
+<title>QureJS - Pipe demo</title>
 <script type="text/javascript" src="../src/qure.js"></script>
 </head>
 <body>
@@ -10,17 +10,14 @@
 <script type="text/javascript">
 
 Qure
-	.load({
-		jquery: './js/jquery.js',
-		test2: './js/test2.js'
+	.then(function() {
+		return 1 + 2;
 	})
-	.then(function(libs) {
-		console.log(libs);
+	.then(function(val) {
+		console.log(val);
 	});
 
 </script>
-
-<div class="tmp"></div>
 
 </body>
 </html>
