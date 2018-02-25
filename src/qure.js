@@ -508,7 +508,12 @@
 			var self = this,
 				args = Array.prototype.slice.call(arguments),
 				fn = function() {
-					var name = args.shift();
+					var name = args.shift(),
+						res = syncFunc._globals.res;
+					if (res) {
+						if (res.constructor !== Array) res = [res];
+						args = args.concat(res);
+					}
 					if (syncFunc[name]) {
 						// this is a sync call
 						syncFunc._globals.qure = self;

@@ -1,5 +1,5 @@
 /*
- * qure.js [v0.2.25]
+ * qure.js.js [v0.2.27]
  * https://github.com/hbi99/qure.js 
  * Copyright (c) 2013-2018, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
@@ -281,7 +281,7 @@
 			var str       = req.responseText,
 				isDeclare = url.slice(-8) === '?declare',
 				ext       = url.split('.'),
-				ctype     = req.headers || req.getResponseHeader ? req.getResponseHeader('Content-Type').match(/.+\/(\w+)?/)[1] : ext[ext.length-1],
+				ctype     = req.headers && req.getResponseHeader ? req.getResponseHeader('Content-Type').match(/.+\/(\w+)?/)[1] : ext[ext.length-1],
 				ret       = { responseText: str },
 				type,
 				parser;
@@ -428,7 +428,7 @@
 					} else {
 						args = arguments;
 					}
-					fn.apply(self.queue._that, args);
+					syncFunc._globals.res = fn.apply(self.queue._that, args);
 					// kill child process, if queue is done and childprocess exists
 					if (!self.queue._methods.length && workFunc._worker && workFunc._worker.process) {
 						workFunc._worker.process.kill();
@@ -514,7 +514,12 @@
 			var self = this,
 				args = Array.prototype.slice.call(arguments),
 				fn = function() {
-					var name = args.shift();
+					var name = args.shift(),
+						res = syncFunc._globals.res;
+					if (res) {
+						if (res.constructor !== Array) res = [res];
+						args = args.concat(res);
+					}
 					if (syncFunc[name]) {
 						// this is a sync call
 						syncFunc._globals.qure = self;
