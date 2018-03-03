@@ -582,7 +582,8 @@
 					if (typeof fn === 'function') {
 						fn.apply(self.queue._that, []);
 					}
-					//this.queue._methods = [];
+					self.queue.flush();
+					self.queue._methods = [];
 				};
 			this.queue.push(func);
 			return this;

@@ -1,5 +1,5 @@
 /*
- * qure.js [v0.2.29]
+ * qure.js [v0.2.30]
  * https://github.com/hbi99/qure.js 
  * Copyright (c) 2013-2018, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
@@ -588,7 +588,8 @@
 					if (typeof fn === 'function') {
 						fn.apply(self.queue._that, []);
 					}
-					//this.queue._methods = [];
+					self.queue.flush();
+					self.queue._methods = [];
 				};
 			this.queue.push(func);
 			return this;

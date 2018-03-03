@@ -18,17 +18,17 @@ describe('Trying out', function() {
 					console.log(a);
 				}
 			})
-			.run('test', 1)
-			.exit()
+			.then(function() {
+				console.log(1);
+
+				qure.exit(function() {
+					console.log('exited');
+					done();
+				});
+			})
+			.run('test', 2)
 			.then(function() {
 				console.log(3);
-			});
-
-		qure.fork()
-			.wait(1000)
-			.then(function() {
-				console.log(2);
-				done();
 			});
 
 	});
