@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>QureJS - Exit demo</title>
+<script type="text/javascript" src="../src/qure.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+
+Qure
+	.declare({
+		test: function(a) {
+			console.log(a);
+
+			this.exit();
+		}
+	})
+	.then(function() {
+		console.log(1);
+	})
+	.run('test', 2)
+	.then(function() {
+		console.log(3);
+	});
+
+
+/*
+Qure
+	.wait(500)
+	.then(function() {
+		console.log(1);
+	})
+	.exit(function() {
+		console.log(2);
+	})
+	.then(function() {
+		console.log(3);
+	});
+*/
+
+</script>
+
+</body>
+</html>

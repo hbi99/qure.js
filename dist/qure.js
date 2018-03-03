@@ -1,5 +1,5 @@
 /*
- * qure.js.js [v0.2.27]
+ * qure.js [v0.2.29]
  * https://github.com/hbi99/qure.js 
  * Copyright (c) 2013-2018, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
@@ -102,7 +102,7 @@
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
 					func = event.data[0];
-				if (['pause', 'resume', 'precede', 'fork'].indexOf(func) === -1) {
+				if (['pause', 'resume', 'precede', 'fork', 'exit'].indexOf(func) === -1) {
 					func = 'resume';
 				}
 				this.qure[func].apply(this.qure, args);
@@ -168,7 +168,8 @@
 				else hash.push(key +':'+ val);
 			}
 			if (isNode) {
-				hash.push("fork : function() { process.send(JSON.stringify(['fork'].concat(Array.prototype.slice.call(arguments)))); }");
+				hash.push("fork    : function() { process.send(JSON.stringify(['fork'].concat(Array.prototype.slice.call(arguments)))); }");
+				hash.push("exit    : function() { process.send(JSON.stringify(['exit'].concat(Array.prototype.slice.call(arguments)))); }");
 				hash.push("pause   : function() { process.send(JSON.stringify(['pause'].concat(Array.prototype.slice.call(arguments)))); }");
 				hash.push("resume  : function() { process.send(JSON.stringify(['resume'].concat(Array.prototype.slice.call(arguments)))); }");
 				hash.push("precede : function() { process.send(JSON.stringify(['precede'].concat(Array.prototype.slice.call(arguments)))); }");
@@ -187,11 +188,12 @@
 			body = body.replace(/\bmodule\b/g,       'this._globals.module');
 			// shortcut to qure functions
 			body = body.replace(/\.fork\(/g,         '._globals.qure.fork(');
+			body = body.replace(/\.exit\(/g,         '._globals.qure.exit(');
 			body = body.replace(/\.pause\(/g,        '._globals.qure.pause(');
 			body = body.replace(/\.resume\(/g,       '._globals.qure.resume(');
 			body = body.replace(/\.precede\(/g,      '._globals.qure.precede(');
 			//body = body.replace(/\.then\(/g,    '._globals.qure.then(');
-			// run, fork, require, declare, wait
+			// run, fork, require, declare, exit, wait
 			//console.log( body );
 
 			// append function body
@@ -576,6 +578,19 @@
 			that.queue._methods = [func];
 			// save reference to sequence
 			seqFunc[name] = that;
+			return this;
+		},
+		exit: function(fn) {
+			var self = this,
+				func = function() {
+					self.pause(true);
+
+					if (typeof fn === 'function') {
+						fn.apply(self.queue._that, []);
+					}
+					//this.queue._methods = [];
+				};
+			this.queue.push(func);
 			return this;
 		}
 	};
