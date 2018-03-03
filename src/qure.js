@@ -96,7 +96,7 @@
 			worker.onmessage = function(event) {
 				var args = Array.prototype.slice.call(event.data, 1),
 					func = event.data[0];
-				if (['pause', 'resume', 'precede', 'fork', 'exit'].indexOf(func) === -1) {
+				if (['pause', 'resume', 'precede', 'fork', 'abort'].indexOf(func) === -1) {
 					func = 'resume';
 				}
 				this.qure[func].apply(this.qure, args);
@@ -163,7 +163,7 @@
 			}
 			if (isNode) {
 				hash.push("fork    : function() { process.send(JSON.stringify(['fork'].concat(Array.prototype.slice.call(arguments)))); }");
-				hash.push("exit    : function() { process.send(JSON.stringify(['exit'].concat(Array.prototype.slice.call(arguments)))); }");
+				hash.push("abort   : function() { process.send(JSON.stringify(['abort'].concat(Array.prototype.slice.call(arguments)))); }");
 				hash.push("pause   : function() { process.send(JSON.stringify(['pause'].concat(Array.prototype.slice.call(arguments)))); }");
 				hash.push("resume  : function() { process.send(JSON.stringify(['resume'].concat(Array.prototype.slice.call(arguments)))); }");
 				hash.push("precede : function() { process.send(JSON.stringify(['precede'].concat(Array.prototype.slice.call(arguments)))); }");
@@ -182,12 +182,12 @@
 			body = body.replace(/\bmodule\b/g,       'this._globals.module');
 			// shortcut to qure functions
 			body = body.replace(/\.fork\(/g,         '._globals.qure.fork(');
-			body = body.replace(/\.exit\(/g,         '._globals.qure.exit(');
+			body = body.replace(/\.abort\(/g,        '._globals.qure.abort(');
 			body = body.replace(/\.pause\(/g,        '._globals.qure.pause(');
 			body = body.replace(/\.resume\(/g,       '._globals.qure.resume(');
 			body = body.replace(/\.precede\(/g,      '._globals.qure.precede(');
 			//body = body.replace(/\.then\(/g,    '._globals.qure.then(');
-			// run, fork, require, declare, exit, wait
+			// run, fork, require, declare, abort, wait
 			//console.log( body );
 
 			// append function body
@@ -574,7 +574,7 @@
 			seqFunc[name] = that;
 			return this;
 		},
-		exit: function(fn) {
+		abort: function(fn) {
 			var self = this,
 				func = function() {
 					self.pause(true);

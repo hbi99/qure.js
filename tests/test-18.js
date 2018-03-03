@@ -3,14 +3,15 @@
  * 
  */
 
-var qure = require('../src/qure.js');
+var qure = require('../src/qure.js'),
+	qureMysql = require('qure-mysql');
 
 describe('Trying out', function() {
 
 	/* 
 	 * 
 	 */
-	it('exit functionality', function(done) {
+	it('abort functionality', function(done) {
 		
 		qure
 			.declare({
@@ -18,15 +19,13 @@ describe('Trying out', function() {
 					console.log(a);
 				}
 			})
+			.run('test', 2)
 			.then(function() {
-				console.log(1);
-
-				qure.exit(function() {
-					console.log('exited');
+				qure.abort(function() {
+					console.log('aborted');
 					done();
 				});
 			})
-			.run('test', 2)
 			.then(function() {
 				console.log(3);
 			});
