@@ -3,8 +3,7 @@
  * 
  */
 
-var qure = require('../src/qure.js'),
-	qureMysql = require('qure-mysql');
+var qure = require('../src/qure.js');
 
 describe('Trying out', function() {
 
@@ -17,14 +16,21 @@ describe('Trying out', function() {
 			.declare({
 				test: function(a) {
 					console.log(a);
+
+					//this.abort();
 				}
 			})
-			.run('test', 2)
 			.then(function() {
+				console.log(1);
+
 				qure.abort(function() {
 					console.log('aborted');
 					done();
 				});
+			})
+			.run('test', 2)
+			.then(function() {
+				console.log(11);
 			})
 			.then(function() {
 				console.log(3);

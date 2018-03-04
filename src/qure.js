@@ -577,16 +577,14 @@
 		abort: function(fn) {
 			var self = this,
 				func = function() {
-					self.pause(true);
-
 					if (typeof fn === 'function') {
 						fn.apply(self.queue._that, []);
 					}
-					self.queue.flush();
-					self.queue._methods = [];
 				};
-			this.queue.push(func);
-			return this;
+			func._paused = true;
+			this.queue.unshift(func);
+
+			return new Qure();
 		}
 	};
 
