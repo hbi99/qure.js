@@ -1,5 +1,5 @@
 /*
- * qure.js [v0.2.31]
+ * qure.js [v0.2.32]
  * https://github.com/hbi99/qure.js 
  * Copyright (c) 2013-2018, Hakan Bilgin <hbi@longscript.com> 
  * Licensed under the MIT License
@@ -583,17 +583,14 @@
 		abort: function(fn) {
 			var self = this,
 				func = function() {
-					self.pause(true);
-
 					if (typeof fn === 'function') {
 						fn.apply(self.queue._that, []);
 					}
-					console.log(self.queue._methods);
-					self.queue.flush();
-					self.queue._methods = [];
 				};
-			this.queue.push(func);
-			return this;
+			func._paused = true;
+			this.queue.unshift(func);
+
+			return new Qure();
 		}
 	};
 
