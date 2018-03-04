@@ -21,12 +21,9 @@ describe('Trying out', function() {
 				}
 			})
 			.then(function() {
-				console.log(1);
-
-				qure.abort(function() {
-					console.log('aborted');
-					done();
-				});
+				done();
+				qure.abort();
+				console.log('aborted');
 			})
 			.run('test', 2)
 			.then(function() {

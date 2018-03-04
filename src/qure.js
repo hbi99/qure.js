@@ -30,6 +30,10 @@
 		this._paused = false;
 	}
 	Queue.prototype = {
+		clear: function() {
+			this._methods = [];
+			this._paused = false;
+		},
 		push: function(fn) {
 			this._methods.push(fn);
 			if (!this._paused) this.flush();
@@ -41,8 +45,7 @@
 		flush: function() {
 			var fn,
 				args = arguments;
-			if (this._paused) return;
-			while (this._methods.length) {
+			while (!this._paused && this._methods.length) {
 				fn = this._methods.shift();
 				fn.apply(this._that, args);
 				if (fn._paused) {
@@ -575,16 +578,15 @@
 			return this;
 		},
 		abort: function(fn) {
-			var self = this,
-				func = function() {
-					if (typeof fn === 'function') {
-						fn.apply(self.queue._that, []);
-					}
-				};
-			func._paused = true;
-			this.queue.unshift(func);
+			var self = this;
+			this.pause(true);
 
-			return new Qure();
+			if (typeof fn === 'function') {
+				fn.apply(this.queue._that, []);
+			}
+			setTimeout(function() {
+				self.queue.clear();
+			},1);
 		}
 	};
 
