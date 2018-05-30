@@ -32,6 +32,7 @@
   "devDependencies": {
     "colors": "^1.1.2",
     "conventional-github-releaser": "^0.5.0",
+    "defiant.js": "^1.4.5",
     "gulp": "^3.9.0",
     "gulp-bump": "^1.0.0",
     "gulp-conventional-changelog": "^0.7.0",
@@ -46,6 +47,7 @@
     "gulp-util": "^3.0.7",
     "jshint-stylish": "^2.0.1",
     "mysql": "^2.9.0",
+    "puppeteer": "^1.4.0",
     "qure-fs": "^1.0.2",
     "qure-less": "^1.0.0",
     "qure-mysql": "^1.0.2",
