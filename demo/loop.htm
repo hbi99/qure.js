@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>QureJS - Loop demo</title>
+<script type="text/javascript" src="../src/qure.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+
+Qure
+	.then(function() {
+		return [3,2,1];
+	})
+	.loop(function(val) {
+		console.log(val);
+
+		return 10 - val;
+	})
+	.then(function(r, v) {
+		console.log(r, v);
+		console.log('done');
+	});
+
+</script>
+
+</body>
+</html>

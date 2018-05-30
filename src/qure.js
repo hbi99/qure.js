@@ -395,10 +395,7 @@
 	function Qure() {
 		var that = {};
 		this.queue = new Queue(this, that);
-
-		// wait for next tick
-	//	this.wait(1);
-
+		this.wait();
 		return this;
 	}
 	Qure.prototype = {
@@ -564,6 +561,26 @@
 			fn._paused = true;
 			if (precede) this.queue.unshift(fn);
 			else this.queue.push(fn);
+			return this;
+		},
+		loop: function(fn) {
+			var self = this,
+				func = function() {
+					var arr = syncFunc._globals.res,
+						res = [],
+						item,
+						index = 0,
+						ret;
+					while (index < arr.length) {
+						item = arr[index];
+						ret = fn.apply(self.queue._that, [item, index++, arr]);
+						res.push(ret);
+					}
+					delete syncFunc._globals.res;
+					self.queue.flush.apply(self.queue, [arr, res]);
+				};
+			func._paused = true;
+			this.queue.push(func);
 			return this;
 		},
 		sequence: function(name, fn) {
