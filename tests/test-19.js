@@ -43,7 +43,6 @@ describe('Testing', function() {
 						// resume queue
 						that.resume(res);
 					});
-
 				}
 			})
 			.run('defiant', data, '//*')
